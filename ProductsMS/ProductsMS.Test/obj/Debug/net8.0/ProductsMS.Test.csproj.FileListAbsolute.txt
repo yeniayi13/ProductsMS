@@ -1,0 +1,12 @@
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\bin\Debug\net8.0\ProductsMS.Test.deps.json
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\bin\Debug\net8.0\ProductsMS.Test.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\bin\Debug\net8.0\ProductsMS.Test.pdb
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ProductsMS.Test.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ProductsMS.Test.AssemblyInfoInputs.cache
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ProductsMS.Test.AssemblyInfo.cs
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ProductsMS.Test.csproj.CoreCompileInputs.cache
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ProductsMS.Test.sourcelink.json
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ProductsMS.Test.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\refint\ProductsMS.Test.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ProductsMS.Test.pdb
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Test\obj\Debug\net8.0\ref\ProductsMS.Test.dll
