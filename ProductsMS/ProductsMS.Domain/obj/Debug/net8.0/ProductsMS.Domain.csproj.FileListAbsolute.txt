@@ -1,0 +1,16 @@
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\bin\Debug\net8.0\ProductsMS.Domain.deps.json
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\bin\Debug\net8.0\ProductsMS.Domain.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\bin\Debug\net8.0\ProductsMS.Domain.pdb
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\bin\Debug\net8.0\ProductsMS.Common.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\bin\Debug\net8.0\ProductsMS.Common.pdb
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.csproj.AssemblyReference.cache
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.AssemblyInfoInputs.cache
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.AssemblyInfo.cs
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.csproj.CoreCompileInputs.cache
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.sourcelink.json
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\Products.93ED1668.Up2Date
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\refint\ProductsMS.Domain.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ProductsMS.Domain.pdb
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Domain\obj\Debug\net8.0\ref\ProductsMS.Domain.dll
