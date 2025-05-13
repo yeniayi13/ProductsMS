@@ -17,6 +17,7 @@
 /ProductsMS/.vs/ProductsMS/FileContentIndex/db030494-cd84-4574-b96a-5e8857377254.vsidx
 /ProductsMS/.vs/ProductsMS/FileContentIndex/df4e557e-04af-401c-8f30-0f3fadc9d72c.vsidx
 /ProductsMS/.vs/ProductsMS/FileContentIndex/f1ec0aae-ae08-4b95-bdbf-4370b3bfc691.vsidx
+<<<<<<< HEAD
 /ProductsMS/.vs/ProductsMS/v17/.futdcache.v2
 /ProductsMS/.vs/ProductsMS/v17/.suo
 /ProductsMS/.vs/ProductsMS/v17/DocumentLayout.backup.json
@@ -26,3 +27,23 @@
 /ProductsMS/.vs/ProjectEvaluation/productsms.metadata.v9.bin
 /ProductsMS/.vs/ProjectEvaluation/productsms.projects.v9.bin
 /ProductsMS/.vs/ProjectEvaluation/productsms.strings.v9.bin
+=======
+/ProductsMS/.vs/ProductsMS/FileContentIndex/9d44a9ca-ced5-4c93-b7e3-9072194c5a1d.vsidx
+/ProductsMS/ProductsMS/obj/Debug/net8.0/ProductsMS.AssemblyInfo.cs
+/ProductsMS/ProductsMS/obj/Debug/net8.0/ProductsMS.AssemblyInfoInputs.cache
+/ProductsMS/ProductsMS/obj/Debug/net8.0/ProductsMS.csproj.AssemblyReference.cache
+/ProductsMS/ProductsMS.Application/obj/Debug/net8.0/ProductsMS.Application.AssemblyInfo.cs
+/ProductsMS/ProductsMS.Application/obj/Debug/net8.0/ProductsMS.Application.AssemblyInfoInputs.cache
+/ProductsMS/ProductsMS.Application/obj/Debug/net8.0/ProductsMS.Application.csproj.AssemblyReference.cache
+/ProductsMS/ProductsMS.Common/obj/Debug/net8.0/ProductsMS.Common.AssemblyInfo.cs
+/ProductsMS/ProductsMS.Common/obj/Debug/net8.0/ProductsMS.Common.AssemblyInfoInputs.cache
+/ProductsMS/ProductsMS.Core/obj/Debug/net8.0/ProductsMS.Core.AssemblyInfo.cs
+/ProductsMS/ProductsMS.Core/obj/Debug/net8.0/ProductsMS.Core.AssemblyInfoInputs.cache
+/ProductsMS/ProductsMS.Core/obj/Debug/net8.0/ProductsMS.Core.csproj.AssemblyReference.cache
+/ProductsMS/ProductsMS.Domain/obj/Debug/net8.0/ProductsMS.Domain.AssemblyInfo.cs
+/ProductsMS/ProductsMS.Domain/obj/Debug/net8.0/ProductsMS.Domain.AssemblyInfoInputs.cache
+/ProductsMS/ProductsMS.Domain/obj/Debug/net8.0/ProductsMS.Domain.csproj.AssemblyReference.cache
+/ProductsMS/ProductsMS.Infrastructure/obj/Debug/net8.0/ProductsMS.Infrastructure.AssemblyInfo.cs
+/ProductsMS/ProductsMS.Infrastructure/obj/Debug/net8.0/ProductsMS.Infrastructure.AssemblyInfoInputs.cache
+/ProductsMS/ProductsMS.Infrastructure/obj/Debug/net8.0/ProductsMS.Infrastructure.csproj.AssemblyReference.cache
+>>>>>>> a
