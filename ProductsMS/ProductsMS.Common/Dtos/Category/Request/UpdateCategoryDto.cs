@@ -8,6 +8,6 @@ namespace ProductsMS.Common.Dtos.Category.Request
 {
     public record UpdateCategoryDto
     {
-        public string? Name { get; init; }
+        public string? CategoryName { get; init; }
     }
 }

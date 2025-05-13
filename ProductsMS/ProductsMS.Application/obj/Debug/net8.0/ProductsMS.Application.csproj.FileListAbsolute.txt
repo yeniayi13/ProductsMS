@@ -18,3 +18,5 @@ C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Application\obj\Debug\net8.0\Pr
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Application\obj\Debug\net8.0\refint\ProductsMS.Application.dll
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Application\obj\Debug\net8.0\ProductsMS.Application.pdb
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Application\obj\Debug\net8.0\ref\ProductsMS.Application.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Application\bin\Debug\net8.0\ProductsMS.Infrastructure.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Application\bin\Debug\net8.0\ProductsMS.Infrastructure.pdb

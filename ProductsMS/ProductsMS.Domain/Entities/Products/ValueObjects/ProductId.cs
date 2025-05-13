@@ -1,7 +1,4 @@
 ﻿
-
-using ProductsMS.Common.Exceptions;
-
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
 {
     public class ProductId
@@ -14,7 +11,7 @@ namespace ProductsMs.Domain.Entities.Products.ValueObjects
         }
         public static ProductId? Create(Guid value)
         {
-            if (value == Guid.Empty) throw new NullAttributeException("Product id is required");
+           // if (value == Guid.Empty) throw new NullAttributeException("Product id is required");
 
             return new ProductId(value);
         }

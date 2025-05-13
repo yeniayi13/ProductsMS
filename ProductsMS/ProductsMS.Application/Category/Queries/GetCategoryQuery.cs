@@ -1,10 +1,11 @@
 ﻿using MediatR;
+using ProductsMs.Domain.Entities.Category;
 using ProductsMS.Common.Dtos.Category.Response;
 
 
 namespace ProductsMS.Application.Category.Queries
 {
-    public class GetCategoryQuery : IRequest<GetCategoryDto>
+    public class GetCategoryQuery : IRequest<CategoryEntity>
     {
         public Guid Id { get; set; }
 
@@ -12,5 +13,6 @@ namespace ProductsMS.Application.Category.Queries
         {
             Id = id;
         }
+
     }
 }

@@ -10,7 +10,7 @@ using ProductsMs.Domain.Entities.Products;
 using ProductsMS.Common.Primitives;
 
 
-namespace ProductsMs.Infrastructure.Database
+namespace ProductsMS.Infrastructure.Database.Context.Postgres
 {
     public class ApplicationDbContext : DbContext, IApplicationDbContext, IUnitOfWork
     {

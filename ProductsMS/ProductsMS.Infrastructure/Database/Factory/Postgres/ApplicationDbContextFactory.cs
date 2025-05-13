@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
+using ProductsMS.Infrastructure.Database.Context.Postgres;
 
-
-namespace ProductsMs.Infrastructure.Database
+namespace ProductsMS.Infrastructure.Database.Factory.Postgres
 {
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {

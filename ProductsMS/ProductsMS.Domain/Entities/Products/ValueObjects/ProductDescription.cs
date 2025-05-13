@@ -1,5 +1,5 @@
 ﻿
-using ProductsMS.Common.Exceptions;
+//using ProductsMS.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace ProductsMs.Domain.Entities.Products.ValueObjects
         {
             try
             {
-                if (string.IsNullOrEmpty(value)) throw new NullAttributeException("Product description is required");
+               // if (string.IsNullOrEmpty(value)) throw new NullAttributeException("Product description is required");
 
                 return new ProductDescription(value);
             }
