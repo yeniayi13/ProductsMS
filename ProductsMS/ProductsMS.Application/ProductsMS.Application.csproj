@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ProductsMS.Common\ProductsMS.Common.csproj" />
     <ProjectReference Include="..\ProductsMS.Core\ProductsMS.Core.csproj" />
+    <ProjectReference Include="..\ProductsMS.Infrastructure\ProductsMS.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

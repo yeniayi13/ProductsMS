@@ -7,6 +7,7 @@ using ProductsMS.Application.Products.Queries;
 using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Enum;
 using ProductsMS.Common.Exceptions;
+using ProductsMS.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Infrastructure.Exceptions;
 
 namespace ProductosMs.Controllers
@@ -63,11 +64,11 @@ namespace ProductosMs.Controllers
 
         //[Authorize(Policy = "AdminProviderOnly")]
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts([FromQuery] Guid userId)
         {
             try
             {
-                var query = new GetAllProductQuery();
+                var query = new GetAllProductQuery(userId);
                 var Products = await _mediator.Send(query);
                 return Ok(Products);
             }
@@ -92,66 +93,118 @@ namespace ProductosMs.Controllers
                 return StatusCode(500, "An error occurred while trying to search Product");
             }
         }
-
-        //[Authorize(Policy = "AdminProviderOnly")]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProduct([FromRoute] Guid id)
+       
+        
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailableProducts(
+            [FromQuery] Guid userId,
+            [FromQuery] Guid? categoryId = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null)
         {
             try
             {
-                var command = new GetProductQuery(id);
-                var Product = await _mediator.Send(command);
-                return Ok(Product);
+                if (userId == Guid.Empty)
+                {
+                    return BadRequest("El ID del usuario es requerido.");
+                }
+
+
+                var query = new GetAvailableProductsQuery(userId, categoryId, minPrice, maxPrice);
+                var products = await _mediator.Send(query);
+
+                if (products == null || !products.Any())
+                {
+                    return NotFound("No se encontraron productos disponibles.");
+                }
+
+                return Ok(products);
             }
-            catch (CategoryNotFoundException e)
+            catch (Exception ex)
             {
-                _logger.LogError("An error occurred while trying to create an Product: {Message}", e.Message);
+                Console.WriteLine($"Error en GetAvailableProducts: {ex.Message}");
+                return StatusCode(500, "Ocurrió un error inesperado al obtener los productos.");
+            }
+        }
+
+
+        [HttpGet("name/product/{name}")]
+        public async Task<IActionResult> GetAllNameProducts([FromRoute] string name, [FromQuery] Guid userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    return BadRequest("El nombre del producto es requerido.");
+                }
+
+                var query = new GetNameProductQuery(name, userId);
+                var products = await _mediator.Send(query);
+
+                return Ok(products);
+            }
+            catch (ProductNotFoundException e)
+            {
+                _logger.LogError("An error occurred while trying to search Product: {Message}", e.Message);
                 return StatusCode(404, e.Message);
             }
             catch (NullAttributeException e)
             {
-                _logger.LogError("An error occurred while trying to create an Product: {Message}", e.Message);
+                _logger.LogError("An error occurred while trying to search Product: {Message}", e.Message);
                 return StatusCode(400, e.Message);
             }
             catch (InvalidAttributeException e)
             {
-                _logger.LogError("An error occurred while trying to create an Product: {Message}", e.Message);
+                _logger.LogError("An error occurred while trying to search Product: {Message}", e.Message);
                 return StatusCode(400, e.Message);
             }
             catch (Exception e)
             {
-                _logger.LogError("An error occurred while trying to search an Product: {Message}", e.Message);
-                return StatusCode(500, "An error occurred while trying to search an Product");
+                _logger.LogError("An unexpected error occurred: {Message}", e.Message);
+                return StatusCode(500, "An unexpected error occurred while trying to search the product.");
             }
         }
-        [HttpGet("filtered")]
-        public async Task<IActionResult> GetFilteredProducts(
-            [FromQuery] Guid? categoryId,
-            [FromQuery] decimal? minPrice,
-            [FromQuery] decimal? maxPrice,
-            [FromQuery] ProductAvilability? status,
-            [FromQuery] bool? isAvailable)
-        {
-            var query = new GetFilteredProductsQuery
-            {
-                CategoryId = categoryId.HasValue ? CategoryId.Create(categoryId.Value) : null,
-                //MinPrice = minPrice.HasValue ? ProductPrice.Create(ProductPrice.Value) : null,
-                //MaxPrice = maxPrice,
-                //Status = status,
-                
-            };
 
-            var products = await _mediator.Send(query);
-            return Ok(products);
-        }
+        //[Authorize(Policy = "AdminProviderOnly")]
+            [HttpGet("{id}")]
+            public async Task<IActionResult> GetProduct([FromRoute] Guid id, [FromQuery] Guid userId)
+            {
+                try
+                {
+                    var command = new GetProductQuery(id,userId);
+                    var Product = await _mediator.Send(command);
+                    return Ok(Product);
+                }
+                catch (CategoryNotFoundException e)
+                {
+                    _logger.LogError("An error occurred while trying to create an Product: {Message}", e.Message);
+                    return StatusCode(404, e.Message);
+                }
+                catch (NullAttributeException e)
+                {
+                    _logger.LogError("An error occurred while trying to create an Product: {Message}", e.Message);
+                    return StatusCode(400, e.Message);
+                }
+                catch (InvalidAttributeException e)
+                {
+                    _logger.LogError("An error occurred while trying to create an Product: {Message}", e.Message);
+                    return StatusCode(400, e.Message);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("An error occurred while trying to search an Product: {Message}", e.Message);
+                    return StatusCode(500, "An error occurred while trying to search an Product");
+                }
+            }
+    
         //[Authorize(Policy = "AdminProviderOnly")]
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromBody] UpdateProductDto updateProductDto)
+        public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromBody] UpdateProductDto updateProductDto, [FromQuery] Guid userId)
         {
             try
             {
-                var command = new UpdateProductCommand(id, updateProductDto);
+                var command = new UpdateProductCommand(id, updateProductDto, userId);
                 var ProductId = await _mediator.Send(command);
                 return Ok(ProductId);
             }
@@ -180,11 +233,11 @@ namespace ProductosMs.Controllers
         //[Authorize(Policy = "AdminOnly")]
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> DeleteProduct([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteProduct([FromRoute] Guid id, [FromQuery] Guid userId)
         {
             try
             {
-                var command = new DeleteProductCommand(id);
+                var command = new DeleteProductCommand(id, userId);
                 var ProductId = await _mediator.Send(command);
                 return Ok(ProductId);
             }

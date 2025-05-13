@@ -1,9 +1,10 @@
-﻿using ProductsMS.Common.Exceptions;
+﻿
 
 namespace ProductsMs.Domain.Entities.Category.ValueObject
 {
     public class CategoryId
     {
+        public Guid Value { get; init; }
         private CategoryId(Guid value) => Value = value;
 
         public static CategoryId Create()
@@ -12,7 +13,7 @@ namespace ProductsMs.Domain.Entities.Category.ValueObject
         }
         public static CategoryId? Create(Guid value)
         {
-             if (value == Guid.Empty) throw new NullAttributeException("Category id is required");
+             //if (value == Guid.Empty) throw new NullAttributeException("Category id is required");
 
             return new CategoryId(value);
         }
@@ -22,6 +23,6 @@ namespace ProductsMs.Domain.Entities.Category.ValueObject
             throw new NotImplementedException();
         }
 
-        public Guid Value { get; init; }
+       
     }
 }

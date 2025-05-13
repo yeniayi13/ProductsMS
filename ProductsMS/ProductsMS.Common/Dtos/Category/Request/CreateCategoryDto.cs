@@ -8,6 +8,7 @@ namespace ProductsMS.Common.Dtos.Category.Request
 {
     public record CreateCategoryDto
     {
-        public string? Name { get; init; }
+        public Guid CategoryId { get; set; } = Guid.NewGuid();
+        public string? CategoryName { get; init; }
     }
 }

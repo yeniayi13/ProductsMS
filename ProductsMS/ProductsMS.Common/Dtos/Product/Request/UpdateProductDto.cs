@@ -8,12 +8,14 @@ namespace ProductsMS.Common.Dtos.Product.Request
 {
     public record  UpdateProductDto
     {
-        public string? Name { get; init; }
-        public string? Image { get; init; }
-        public decimal Price { get; init; }
-        public string? Description { get; init; }
-        public int Avilability { get; init; }
-        public decimal Stock { get; init; }
+        public Guid ProductId { get; init; }
+        public string? ProductName { get; init; }
+        public string? ProductImage { get; init; }
+        public decimal ProductPrice { get; init; }
+        public string? ProductDescription { get; init; }
+        public string ProductAvilability { get; init; }
+        public decimal ProductStock { get; init; }
         public Guid CategoryId { get; init; }
+        public Guid ProductUserId { get; init; }
     }
 }

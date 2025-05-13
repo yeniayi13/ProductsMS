@@ -1,4 +1,4 @@
-﻿using ProductsMS.Common.Exceptions;
+﻿
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
@@ -12,9 +12,9 @@ namespace ProductsMs.Domain.Entities.Products.ValueObjects
         {
             try
             {
-                if (value == default) throw new NullAttributeException("Value is required");
+                //if (value == default) throw new NullAttributeException("Value is required");
                 //if (!BasePriceRegex().IsMatch(value)) throw new InvalidAttributeException("Client ci is invalid");
-                if (value < 0) throw new InvalidAttributeException("Value is invalid");
+                //if (value < 0) throw new InvalidAttributeException("Value is invalid");
 
                 return new ProductPrice(value);
             }

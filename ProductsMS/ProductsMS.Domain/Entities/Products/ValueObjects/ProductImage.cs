@@ -1,4 +1,4 @@
-﻿using ProductsMS.Common.Exceptions;
+﻿
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
@@ -13,8 +13,8 @@ namespace ProductsMs.Domain.Entities.Products.ValueObjects
         {
             try
             {
-                if (string.IsNullOrEmpty(url)) throw new NullAttributeException("Image URL is required");
-                if (!UrlRegex().IsMatch(url)) throw new InvalidAttributeException("Invalid image URL format");
+                //if (string.IsNullOrEmpty(url)) throw new NullAttributeException("Image URL is required");
+               // if (!UrlRegex().IsMatch(url)) throw new InvalidAttributeException("Invalid image URL format");
 
                 return new ProductImage(url);
             }

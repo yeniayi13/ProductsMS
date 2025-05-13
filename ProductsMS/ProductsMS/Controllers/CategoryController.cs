@@ -92,7 +92,7 @@ namespace ProductosMs.Controllers
 
         //[Authorize(Policy = "AdminProviderOnly")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDepartment([FromRoute] Guid id)
+        public async Task<IActionResult> GetCategory([FromRoute] Guid id)
         {
             try
             {
@@ -121,6 +121,39 @@ namespace ProductosMs.Controllers
                 return StatusCode(500, "An error occurred while trying to search an Category");
             }
         }
+
+
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetCategoryName([FromRoute] string name)
+        {
+            try
+            {
+                var command = new GetCategoryNameQuery(name);
+                var Category = await _mediator.Send(command);
+                return Ok(Category);
+            }
+            catch (CategoryNotFoundException e)
+            {
+                _logger.LogError("An error occurred while trying to create an Category: {Message}", e.Message);
+                return StatusCode(404, e.Message);
+            }
+            catch (NullAttributeException e)
+            {
+                _logger.LogError("An error occurred while trying to create an Category: {Message}", e.Message);
+                return StatusCode(400, e.Message);
+            }
+            catch (InvalidAttributeException e)
+            {
+                _logger.LogError("An error occurred while trying to create an Category: {Message}", e.Message);
+                return StatusCode(400, e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("An error occurred while trying to search an Category: {Message}", e.Message);
+                return StatusCode(500, "An error occurred while trying to search an Category");
+            }
+        }
+
 
         //[Authorize(Policy = "AdminProviderOnly")]
         [HttpPut]

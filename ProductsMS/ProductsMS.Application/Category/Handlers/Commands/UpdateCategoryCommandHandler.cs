@@ -10,6 +10,7 @@ namespace ProductosMs.Application.Category.Handlers.Commands
      public class UpdateCategoryCommandHandler:IRequestHandler<UpdateCategoryCommand, Guid>
     {
         private readonly ICategoryRepository _categoryRepository;
+
         public UpdateCategoryCommandHandler(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository)); //*Valido que estas inyecciones sean exitosas
@@ -25,14 +26,19 @@ namespace ProductosMs.Application.Category.Handlers.Commands
 
                 if (oldCategory == null) throw new CategoryNotFoundException("category not found");
 
-                if ((request.Category.Name != null) )
+                var categoryEntity = new CategoryEntity(
+                    CategoryId.Create(request.CategoryId)!,
+                    CategoryName.Create(request.Category.CategoryName)!
+                );
+
+                if ((request.Category.CategoryName != null) )
                 {
-                    oldCategory = CategoryEntity.Update(oldCategory, CategoryName.Create(request.Category.Name));
+                    categoryEntity = CategoryEntity.Update(categoryEntity, CategoryName.Create(request.Category.CategoryName));
                 }
              
-                await _categoryRepository.UpdateAsync(oldCategory);
+                await _categoryRepository.UpdateAsync(categoryEntity);
 
-                return oldCategory.Id.Value;
+                return categoryEntity.CategoryId.Value;
             }
             catch (Exception ex)
             {

@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProductsMs.Domain.Entities.Products;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
+using ProductsMS.Domain.Entities.Products.ValueObjects;
 
-namespace ProductsMs.Infrastructure.Database.Configuration
+namespace ProductsMS.Infrastructure.Database.Configuration.Postgres
 {
         public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
         {
@@ -13,38 +14,45 @@ namespace ProductsMs.Infrastructure.Database.Configuration
 
 
                         builder.ToTable("Products");
-                        builder.HasKey(s => s.Id);
-                        builder.Property(s => s.Id)
+                        builder.HasKey(s => s.ProductId);
+                        builder.Property(s => s.ProductId)
                                 .HasConversion(productId => productId.Value, value => ProductId.Create(value)!)
                                 .IsRequired();
-                        builder.Property(s => s.Name)
+
+                        builder.Property(s => s.ProductName)
                                 .HasConversion(productName => productName.Value, value => ProductName.Create(value)!)
                                 .IsRequired();
-                        builder.Property(s => s.Description)
+
+                        builder.Property(s => s.ProductDescription)
                                 .HasConversion(productDescription => productDescription.Value, value => ProductDescription.Create(value)!)
                                 .IsRequired();
-                        builder.Property(s => s.Image)
+
+                        builder.Property(s => s.ProductImage)
                               .HasConversion(productImage => productImage.Url, value => ProductImage.Create(value)!)
                               .IsRequired();
-                        builder.Property(s => s.Stock)
+
+                        builder.Property(s => s.ProductStock)
                               .HasConversion(productStock => productStock.Value, value => ProductStock.Create(value)!)
                               .IsRequired();
 
-            builder.Property(s => s.Price)
-                                .HasConversion(productPrice => productPrice.Value, value => ProductPrice.Create(value)!)
-                                .IsRequired();
-                        builder.Property(s => s.Avilability)
+                        builder.Property(s => s.ProductPrice)
+                                            .HasConversion(productPrice => productPrice.Value, value => ProductPrice.Create(value)!)
+                                            .IsRequired();
+
+                        builder.Property(s => s.ProductAvilability)
                                 .HasConversion<string>()
                                 .IsRequired();
                          builder.Property(p => p.CategoryId)
                                 .IsRequired(); // La clave foránea no puede ser nula
 
-                        builder.HasOne(p => p.Category) // Relación con Categoria
-                            .WithMany(c => c.Products)  // Categoria tiene muchos Productos
-                            .HasForeignKey(p => p.CategoryId) // Definimos la clave foránea
-                            .IsRequired(); // Aseguramos que la relación sea obligatoria
-
-
+                                    builder.HasOne(p => p.Category)
+                        .WithMany(c => c.Products)
+                        .HasForeignKey(p => p.CategoryId)
+                        .OnDelete(DeleteBehavior.Cascade) // Ajusta según tu lógica de negocio
+                        .IsRequired();
+            builder.Property(s => s.ProductUserId)
+                               .HasConversion(ProductUserId => ProductUserId.Value, value => ProductUserId.Create(value)! )
+                               .IsRequired();
 
         }
         }

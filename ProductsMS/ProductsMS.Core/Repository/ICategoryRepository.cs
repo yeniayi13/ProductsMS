@@ -1,6 +1,7 @@
 ﻿
 using ProductsMs.Domain.Entities.Category;
 using ProductsMs.Domain.Entities.Category.ValueObject;
+using ProductsMS.Common.Dtos.Category.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;

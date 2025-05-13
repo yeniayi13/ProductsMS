@@ -3,34 +3,38 @@ using ProductsMs.Domain.Entities.Category.ValueObject;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Common.Enum;
 using ProductsMS.Common.Primitives;
+using ProductsMS.Domain.Entities.Products.ValueObjects;
 
 namespace ProductsMs.Domain.Entities.Products
 {
     public sealed class ProductEntity: AggregateRoot
     {
-        public ProductId Id { get; private set; }
-        public ProductName Name { get; private set; }
-        public ProductImage Image { get; private set; }
-        public ProductPrice Price { get; private set; }
-        public ProductDescription Description { get; private set; }
+        public ProductId ProductId { get; private set; }
+        public ProductName ProductName { get; private set; }
+        public ProductImage ProductImage { get; private set; }
+        public ProductPrice ProductPrice { get; private set; }
+        public ProductDescription ProductDescription { get; private set; }
 
         public CategoryId CategoryId { get; private set; } //FK
 
         public CategoryEntity Category { get; private set; } //Navigation Property
 
-        public ProductAvilability Avilability { get; private set; }
+        public ProductAvilability ProductAvilability { get; private set; }
 
-        public ProductStock Stock { get; private set; } 
-        public ProductEntity(ProductId id, ProductName name, ProductImage image, ProductPrice price, ProductDescription description, ProductAvilability avilability, ProductStock stock, CategoryId categoryId)
+        public ProductStock ProductStock { get; private set; } 
+
+        public ProductUserId ProductUserId { get; private set; } //FK
+        public ProductEntity(ProductId productId, ProductName productName, ProductImage productImage, ProductPrice productPrice, ProductDescription productDescription, ProductAvilability productavilability, ProductStock productStock, CategoryId categoryId, ProductUserId productUserId)
         {
-            Id = id;
-            Name = name;
-            Image = image;
-            Price = price;
-            Description = description;
-            Avilability = avilability;
-            Stock = stock;
+            ProductId = productId;
+            ProductName = productName;
+            ProductImage = productImage;
+            ProductPrice = productPrice;
+            ProductDescription = productDescription;
+            ProductAvilability = productavilability;
+            ProductStock = productStock;
             CategoryId = categoryId;
+            ProductUserId = productUserId;
 
         }
 
@@ -38,18 +42,34 @@ namespace ProductsMs.Domain.Entities.Products
 
 
         //actualiza las propiedades de un objeto
-        public static ProductEntity Update(ProductEntity product, ProductName name, ProductImage image, ProductPrice price, ProductDescription description, ProductAvilability avilability, ProductStock stock)
+        public static ProductEntity Update(ProductEntity product, ProductName name, ProductImage image, ProductPrice price, ProductDescription description, ProductAvilability avilability, ProductStock stock,CategoryId categoryId, ProductUserId productUserId)
         {
-            var updates = new List<Action>()
-            {
-                () => { if (name != null) product.Name = name; },
-                () => { if (image != null) product.Image = image; },
-                () => { if (price != null) product.Price = price; },
-                () => { if (description != null) product.Description = description; },
-                () => { if (stock != null) product.Stock = stock; },
-                () => { if (avilability != null) product.Avilability = avilability; },
 
-            };
+               var updates = new List<Action>()
+                {
+                    () => { if (name != null) product.ProductName = name; },
+                    () => { if (image != null) product.ProductImage = image; },
+                    () => { if (price != null) product.ProductPrice = price; },
+                    () => { if (description != null) product.ProductDescription = description; },
+                    () => { if (stock != null) product.ProductStock = stock; },
+                    () =>
+                    {
+                        if (avilability != null)
+                        {
+                            if (Enum.TryParse<ProductAvilability>(avilability.ToString(), out var availabilityEnum))
+                            {
+                                product.ProductAvilability = availabilityEnum;
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Error: No se pudo convertir '{avilability}' a ProductAvailability.");
+                            }
+                        }
+                    },
+                    () => { if (product.CategoryId != null) product.CategoryId = categoryId; },
+                    () => { if (product.ProductUserId != null) product.ProductUserId = productUserId; }
+                };
+
             updates.ForEach(update => update());
             return product;
         }

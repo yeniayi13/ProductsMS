@@ -10,10 +10,12 @@ namespace ProductsMS.Application.Products.Commands
     public class DeleteProductCommand : IRequest<Guid>
     {
         public Guid ProductId { get; set; }
+        public Guid UserId { get; set; }
 
-        public DeleteProductCommand(Guid product)
+        public DeleteProductCommand(Guid product, Guid userId)
         {
             ProductId = product;
+            UserId = userId;
         }
     }
 }

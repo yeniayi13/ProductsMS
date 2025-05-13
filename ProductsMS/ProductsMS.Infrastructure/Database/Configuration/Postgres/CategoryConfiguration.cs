@@ -8,7 +8,7 @@ using ProductsMs.Domain.Entities.Category;
 using ProductsMs.Domain.Entities.Category.ValueObject;
 
 
-namespace ProductsMs.Infrastructure.Database.Configuration
+namespace ProductsMS.Infrastructure.Database.Configuration.Postgres
 {
         public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
         {
@@ -17,11 +17,11 @@ namespace ProductsMs.Infrastructure.Database.Configuration
 
 
                         builder.ToTable("Categories");
-                        builder.HasKey(s => s.Id);
-                        builder.Property(s => s.Id)
+                        builder.HasKey(s => s.CategoryId);
+                        builder.Property(s => s.CategoryId)
                                 .HasConversion(categoryId => categoryId.Value, value => CategoryId.Create(value)!)
                                 .IsRequired();
-                        builder.Property(s => s.Name)
+                        builder.Property(s => s.CategoryName)
                                 .HasConversion(categoryName => categoryName.Value, value => CategoryName.Create(value)!)
                                 .IsRequired();
 

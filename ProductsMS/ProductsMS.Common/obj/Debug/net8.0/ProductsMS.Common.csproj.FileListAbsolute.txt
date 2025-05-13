@@ -11,3 +11,6 @@ C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Common\obj\Debug\net8.0\Product
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Common\obj\Debug\net8.0\refint\ProductsMS.Common.dll
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Common\obj\Debug\net8.0\ProductsMS.Common.pdb
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Common\obj\Debug\net8.0\ref\ProductsMS.Common.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Common\bin\Debug\net8.0\ProductsMS.Domain.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Common\bin\Debug\net8.0\ProductsMS.Domain.pdb
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS.Common\obj\Debug\net8.0\Products.2CF1C9E4.Up2Date

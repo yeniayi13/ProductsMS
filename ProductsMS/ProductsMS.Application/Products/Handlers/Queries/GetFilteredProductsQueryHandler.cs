@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ProductsMS.Application.Products.Handlers.Queries
 {
-    public class GetFilteredProductsQueryHandler: IRequestHandler<GetFilteredProductsQuery, List<GetProductDto>>
+   /* public class GetFilteredProductsQueryHandler: IRequestHandler<GetFilteredProductsQuery, List<GetProductDto>>
     {
         private readonly IProductRepository _productRepository;
 
@@ -28,20 +28,8 @@ namespace ProductsMS.Application.Products.Handlers.Queries
                 request.Status
             );
 
-            return products.Select(p =>
-                new GetProductDto(
-                    p.Id.Value,
-                    p.Name.Value,
-                    p.Image.Url,
-                    p.Price.Value,
-                    p.Description.Value,
-                    p.Avilability.ToString(),
-                    p.Stock.Value,
-                    p.CategoryId.Value,
-                    p.CreatedBy ?? string.Empty
-                )
-            ).ToList();
+            return products;
         }
     }
-
+   */
 }

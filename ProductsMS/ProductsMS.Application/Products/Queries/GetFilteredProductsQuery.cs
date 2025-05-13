@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using ProductsMs.Domain.Entities.Category.ValueObject;
+using ProductsMs.Domain.Entities.Products;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Common.Enum;

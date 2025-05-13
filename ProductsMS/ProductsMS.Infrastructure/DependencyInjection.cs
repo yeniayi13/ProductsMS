@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductsMs.Core.Database;
 using ProductsMs.Core.Repository;
-using ProductsMs.Infrastructure.Database;
 using ProductsMs.Infrastructure.Repositories;
 using ProductsMS.Common.Primitives;
+using ProductsMS.Infrastructure.Database.Context.Postgres;
 
 
 namespace ProductsMs.Infrastructure

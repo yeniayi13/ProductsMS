@@ -4,7 +4,11 @@ using ProductsMs.Domain.Entities.Category.ValueObject;
 using ProductsMs.Domain.Entities.Products;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Application.Products.Commands;
+using ProductsMS.Common.Dtos.Category.Request;
+using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Enum;
+using ProductsMS.Core.RabbitMQ;
+using ProductsMS.Domain.Entities.Products.ValueObjects;
 
 
 
@@ -14,11 +18,12 @@ namespace ProductsMS.Application.Products.Handlers.Commands
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
-
-        public CreateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository)
+        private readonly IEventBus<CreateProductDto> _eventBus;
+        public CreateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository, IEventBus<CreateProductDto> eventBus)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
+            _eventBus = eventBus;
         }
 
         public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -26,7 +31,7 @@ namespace ProductsMS.Application.Products.Handlers.Commands
             try
             {
                 // Crear un nuevo ProductId
-                var productId = ProductId.Create(Guid.NewGuid());
+               // var productId = ProductId.Create(Guid.NewGuid());
 
                 // Validar que la categoría existe
                 var category = await _categoryRepository.GetByIdAsync(CategoryId.Create(request.Product.CategoryId));
@@ -37,21 +42,22 @@ namespace ProductsMS.Application.Products.Handlers.Commands
 
                 // Crear la entidad Producto
                 var product = new ProductEntity(
-                    productId,
-                    ProductName.Create(request.Product.Name),
-                    ProductImage.Create(request.Product.Image),
-                    ProductPrice.Create(request.Product.Price),
-                    ProductDescription.Create(request.Product.Description),
-                    ProductAvilability.Disponible, // Estado inicial
-                    ProductStock.Create(request.Product.Stock),
-                    category.Id // Usar el ID de la categoría existente
+                    ProductId.Create(request.Product.ProductId),
+                    ProductName.Create(request.Product.ProductName),
+                    ProductImage.Create(request.Product.ProductImage),
+                    ProductPrice.Create(request.Product.ProductPrice),
+                    ProductDescription.Create(request.Product.ProductDescription),
+                    Enum.Parse<ProductAvilability>(request.Product.ProductAvilability.ToString()!), // Estado inicial
+                    ProductStock.Create(request.Product.ProductStock),
+                    CategoryId.Create(category.CategoryId.Value) ,// Usar el ID de la categoría existente
+                    ProductUserId.Create(request.Product.ProductUserId) // Asignar el ID del usuario
                 );
 
                 // Guardar el producto en el repositorio
                 await _productRepository.AddAsync(product);
-
+                await _eventBus.PublishMessageAsync(request.Product, "productQueue", "PRODUCT_CREATED");
                 // Retornar el ID del producto registrado
-                return product.Id.Value;
+                return product.ProductId.Value;
             }
             catch (Exception ex)
             {

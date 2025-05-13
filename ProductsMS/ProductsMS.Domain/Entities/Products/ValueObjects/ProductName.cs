@@ -1,4 +1,4 @@
-﻿using ProductsMS.Common.Exceptions;
+﻿
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
@@ -12,8 +12,8 @@ namespace ProductsMs.Domain.Entities.Products.ValueObjects
         {
             try
             {
-               if (string.IsNullOrEmpty(value)) throw new NullAttributeException("Product Name is required");
-               if (!NameRegex().IsMatch(value)) throw new InvalidAttributeException("Product Name is invalid");
+              // if (string.IsNullOrEmpty(value)) throw new NullAttributeException("Product Name is required");
+               //if (!NameRegex().IsMatch(value)) throw new InvalidAttributeException("Product Name is invalid");
 
                 return new ProductName(value);
             }
