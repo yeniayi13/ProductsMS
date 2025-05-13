@@ -2761,8 +2761,7 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "AutoMapper": "14.0.0",
-          "MediatR": "12.5.0",
-          "ProductsMS.Domain": "1.0.0"
+          "MediatR": "12.5.0"
         },
         "compile": {
           "bin/placeholder/ProductsMS.Common.dll": {}
@@ -2791,7 +2790,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "MediatR": "12.5.0"
+          "MediatR": "12.5.0",
+          "ProductsMS.Common": "1.0.0"
         },
         "compile": {
           "bin/placeholder/ProductsMS.Domain.dll": {}

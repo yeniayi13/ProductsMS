@@ -38,9 +38,6 @@
               },
               "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Core\\ProductsMS.Core.csproj": {
                 "projectPath": "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Core\\ProductsMS.Core.csproj"
-              },
-              "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Infrastructure\\ProductsMS.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Infrastructure\\ProductsMS.Infrastructure.csproj"
               }
             }
           }
@@ -118,11 +115,7 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {
-              "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Domain\\ProductsMS.Domain.csproj": {
-                "projectPath": "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Domain\\ProductsMS.Domain.csproj"
-              }
-            }
+            "projectReferences": {}
           }
         },
         "warningProperties": {
@@ -281,7 +274,11 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Common\\ProductsMS.Common.csproj": {
+                "projectPath": "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Common\\ProductsMS.Common.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
