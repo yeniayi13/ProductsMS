@@ -1,32 +1,44 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
 {
+
+    [ExcludeFromCodeCoverage]
     public partial class ProductImage
     {
-        private const string Pattern = @"^(http(s)?://)?([a-zA-Z0-9_-]+\.)+[a-zA-Z]+(/.*\.(jpg|jpeg|png|bmp|gif))$";
+        private ProductImage(string base64Data) => Base64Data = base64Data;
 
-        private ProductImage(string url) => Url = url;
+        // Método de fábrica para recibir un Base64 directamente
+        public static ProductImage FromBase64(string base64Data)
+        {
+            if (string.IsNullOrEmpty(base64Data))
+                throw new ArgumentNullException(nameof(base64Data), "El Base64 es requerido");
 
-        public static ProductImage Create(string url)
+            return new ProductImage(base64Data);
+        }
+
+        // Método de fábrica para cargar desde un archivo de imagen
+        public static ProductImage FromFile(string imagePath)
         {
             try
             {
-                //if (string.IsNullOrEmpty(url)) throw new NullAttributeException("Image URL is required");
-               // if (!UrlRegex().IsMatch(url)) throw new InvalidAttributeException("Invalid image URL format");
+                if (string.IsNullOrEmpty(imagePath))
+                    throw new ArgumentNullException(nameof(imagePath), "La ruta de la imagen es requerida");
 
-                return new ProductImage(url);
+                byte[] imageBytes = File.ReadAllBytes(imagePath);
+                string base64String = Convert.ToBase64String(imageBytes);
+
+                return new ProductImage(base64String);
             }
             catch (Exception e)
             {
-                throw; // Aquí podrías agregar lógica de manejo de excepciones como logging.
+                Console.WriteLine($"Error: {e.Message}");
+                throw new Exception("Error al procesar la imagen", e);
             }
         }
 
-        public string Url { get; init; } // Inmutable, solo se asigna desde el constructor
-
-        [GeneratedRegex(Pattern)]
-        private static partial Regex UrlRegex();
+        public string Base64Data { get; init; } // Inmutable, solo se asigna desde el constructor
     }
 }

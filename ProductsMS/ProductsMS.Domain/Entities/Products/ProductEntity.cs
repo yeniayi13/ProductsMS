@@ -4,13 +4,15 @@ using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Common.Enum;
 using ProductsMS.Common.Primitives;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProductsMs.Domain.Entities.Products
 {
+  
     public sealed class ProductEntity: AggregateRoot
     {
         public ProductId ProductId { get; private set; }
-        public ProductName ProductName { get; private set; }
+        public ProductName ProductName { get;  set; }
         public ProductImage ProductImage { get; private set; }
         public ProductPrice ProductPrice { get; private set; }
         public ProductDescription ProductDescription { get; private set; }
@@ -24,6 +26,9 @@ namespace ProductsMs.Domain.Entities.Products
         public ProductStock ProductStock { get; private set; } 
 
         public ProductUserId ProductUserId { get; private set; } //FK
+
+        
+
         public ProductEntity(ProductId productId, ProductName productName, ProductImage productImage, ProductPrice productPrice, ProductDescription productDescription, ProductAvilability productavilability, ProductStock productStock, CategoryId categoryId, ProductUserId productUserId)
         {
             ProductId = productId;
@@ -36,6 +41,46 @@ namespace ProductsMs.Domain.Entities.Products
             CategoryId = categoryId;
             ProductUserId = productUserId;
 
+        }
+
+        public ProductEntity(
+            ProductId productId,
+            ProductName productName,
+            ProductImage productImage,
+            ProductPrice productPrice,
+            ProductDescription productDescription,
+            ProductAvilability productAvilability,
+            ProductStock productStock,
+            CategoryId categoryId,
+            ProductUserId productUserId,
+            string createdBy,
+            DateTime createdAt,
+            string updatedBy,
+            DateTime updatedAt)
+        {
+            ProductId = productId;
+            ProductName = productName;
+            ProductImage = productImage;
+            ProductPrice = productPrice;
+            ProductDescription = productDescription;
+            ProductAvilability = productAvilability;
+            ProductStock = productStock;
+            CategoryId = categoryId;
+            ProductUserId = productUserId;
+            CreatedBy = createdBy;
+            UpdatedBy = updatedBy;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
+        }
+
+
+        
+
+
+        public ProductEntity(ProductId productId)
+        {
+            ProductId = productId;
+            
         }
 
         public ProductEntity() { }

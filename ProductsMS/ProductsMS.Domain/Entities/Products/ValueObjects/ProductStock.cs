@@ -1,8 +1,11 @@
 ﻿//using ProductsMS.Common.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
 {
+
+    [ExcludeFromCodeCoverage]
     public partial class ProductStock
     {
         private const string Pattern = @"^\d+$";

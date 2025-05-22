@@ -24,20 +24,26 @@ namespace ProductsMS.Application.Products.Handlers.Commands
 
         public async Task<Guid> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            try
+            if (request == null)
             {
-                var productId = ProductId.Create(request.ProductId);
-                var userId = ProductUserId.Create(request.UserId);
-                var products = await _productRepository.GetByIdAsync(productId,userId);
-                await _productRepository.DeleteAsync(productId);
-                var productDto = _mapper.Map<GetProductDto>(products);
-                await _eventBus.PublishMessageAsync(productDto, "productQueue", "PRODUCT_DELETED");
-                return productId.Value;
+                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
             }
-            catch (Exception ex)
+
+            var productId = ProductId.Create(request.ProductId);
+            var userId = ProductUserId.Create(request.UserId);
+
+            var product = await _productRepository.GetByIdAsync(productId, userId);
+            if (product == null)
             {
-                throw;
+                throw new Exception("Product not found."); // Esta excepción debe existir
             }
+
+            await _productRepository.DeleteAsync(productId);
+
+            var productDto = _mapper.Map<GetProductDto>(product);
+            await _eventBus.PublishMessageAsync(productDto, "productQueue", "PRODUCT_DELETED");
+
+            return productId.Value;
         }
     }
 }

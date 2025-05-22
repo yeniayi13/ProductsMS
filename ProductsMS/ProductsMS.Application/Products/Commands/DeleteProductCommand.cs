@@ -12,9 +12,9 @@ namespace ProductsMS.Application.Products.Commands
         public Guid ProductId { get; set; }
         public Guid UserId { get; set; }
 
-        public DeleteProductCommand(Guid product, Guid userId)
+        public DeleteProductCommand(Guid productId, Guid userId)
         {
-            ProductId = product;
+            ProductId = productId;
             UserId = userId;
         }
     }

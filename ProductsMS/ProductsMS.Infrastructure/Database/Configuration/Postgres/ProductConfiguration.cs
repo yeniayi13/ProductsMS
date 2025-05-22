@@ -4,10 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProductsMs.Domain.Entities.Products;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProductsMS.Infrastructure.Database.Configuration.Postgres
 {
-        public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
+
+    [ExcludeFromCodeCoverage]
+    public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
         {
                 public void Configure(EntityTypeBuilder<ProductEntity> builder)
                 {
@@ -28,7 +31,7 @@ namespace ProductsMS.Infrastructure.Database.Configuration.Postgres
                                 .IsRequired();
 
                         builder.Property(s => s.ProductImage)
-                              .HasConversion(productImage => productImage.Url, value => ProductImage.Create(value)!)
+                              .HasConversion(productImage => productImage.Base64Data, value => ProductImage.FromBase64(value)!)
                               .IsRequired();
 
                         builder.Property(s => s.ProductStock)

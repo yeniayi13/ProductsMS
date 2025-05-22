@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ProductsMS.Common.Dtos.Product.Response;
 
 namespace ProductsMS.Core.Service.User
 {
     public interface IUserService
     {
-        Task<bool> AuctioneerExists(ProductUserId productUserId);
+        Task<GetUser> AuctioneerExists(Guid productUserId);
 
     }
 }

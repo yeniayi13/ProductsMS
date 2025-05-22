@@ -2,12 +2,14 @@
 using ProductsMs.Domain.Entities.Category;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductsMS.Infrastructure.Database.Configuration.Mongo
 {
+    [ExcludeFromCodeCoverage]
     public class CategoryConfigurationMongo
     {
         public static void Configure(IMongoCollection<CategoryEntity> collection)

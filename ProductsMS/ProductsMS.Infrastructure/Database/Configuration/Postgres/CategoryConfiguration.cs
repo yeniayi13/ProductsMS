@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,9 @@ using ProductsMs.Domain.Entities.Category.ValueObject;
 
 namespace ProductsMS.Infrastructure.Database.Configuration.Postgres
 {
-        public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
+
+    [ExcludeFromCodeCoverage]
+    public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
         {
                 public void Configure(EntityTypeBuilder<CategoryEntity> builder)
                 {

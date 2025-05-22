@@ -26,12 +26,12 @@ namespace ProductosMs.Controllers
         }
 
         //[Authorize(Policy = "AdminOnly")]
-        [HttpPost]
-        public async Task<IActionResult> CreatedCategory([FromBody] CreateProductDto createProductDto)
+        [HttpPost("addProduct/{userId}")]
+        public async Task<IActionResult> CreatedProduct([FromBody] CreateProductDto createProductDto, [FromRoute] Guid userId)
         {
             try
             {
-                var command = new CreateProductCommand(createProductDto);
+                var command = new CreateProductCommand(createProductDto, userId);
                 var CategoryId = await _mediator.Send(command);
                 return Ok(CategoryId);
             }
@@ -70,6 +70,12 @@ namespace ProductosMs.Controllers
             {
                 var query = new GetAllProductQuery(userId);
                 var Products = await _mediator.Send(query);
+
+
+                if (Products == null || !Products.Any()) // 🔥 Asegurar que devuelve 404 cuando la lista está vacía
+                {
+                    return NotFound("No products found");
+                }
                 return Ok(Products);
             }
             catch (ProductNotFoundException e)
@@ -140,6 +146,8 @@ namespace ProductosMs.Controllers
 
                 var query = new GetNameProductQuery(name, userId);
                 var products = await _mediator.Send(query);
+
+
 
                 return Ok(products);
             }

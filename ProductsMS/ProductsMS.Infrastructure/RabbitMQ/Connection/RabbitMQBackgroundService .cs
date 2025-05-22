@@ -1,14 +1,15 @@
 ﻿
 using Microsoft.Extensions.Hosting;
+using ProductsMS.Core.RabbitMQ;
 using ProductsMS.Infrastructure.RabbitMQ.Consumer;
 
 namespace ProductsMS.Infrastructure.RabbitMQ.Connection
 {
     public class RabbitMQBackgroundService : BackgroundService
     {
-        private readonly RabbitMQConsumer _rabbitMQConsumer;
+        private readonly IRabbitMQConsumer _rabbitMQConsumer;
 
-        public RabbitMQBackgroundService(RabbitMQConsumer rabbitMQConsumer)
+        public RabbitMQBackgroundService(IRabbitMQConsumer rabbitMQConsumer)
         {
             _rabbitMQConsumer = rabbitMQConsumer;
         }

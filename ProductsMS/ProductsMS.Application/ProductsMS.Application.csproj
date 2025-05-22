@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Category\Commands\" />
+    <Folder Include="Category\Handlers\Commands\" />
     <Folder Include="Category\Validators\" />
-    <Folder Include="Products\Validators\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 

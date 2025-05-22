@@ -7,27 +7,29 @@ using MongoDB.Driver;
 using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMs.Domain.Entities.Products;
-using ProductsMS.Common.Dtos.Category.Request;
+using ProductsMS.Core.RabbitMQ;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProductsMS.Infrastructure.RabbitMQ.Consumer
 {
-    public class RabbitMQConsumer
+    //[ExcludeFromCodeCoverage]
+    public class RabbitMQConsumer: IRabbitMQConsumer
     {
-        private readonly RabbitMQConnection _rabbitMQConnection;
-        private readonly MongoClient _mongoClient;
+        private readonly IConnectionRabbbitMQ _rabbitMQConnection;
+        private readonly IMongoClient _mongoClient;
         private readonly IMongoDatabase _database;
         private readonly IMongoCollection<GetProductDto> _collection;
-        public RabbitMQConsumer(RabbitMQConnection rabbitMQConnection)
+        public RabbitMQConsumer(IConnectionRabbbitMQ rabbitMQConnection, IMongoCollection<GetProductDto> collection)
         {
             _rabbitMQConnection = rabbitMQConnection;
 
-            // 🔹 Conexión a MongoDB Atlas
+            //🔹 Conexión a MongoDB Atlas
             _mongoClient = new MongoClient("mongodb+srv://yadefreitas19:08092001@cluster0.owy2d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
             _database = _mongoClient.GetDatabase("ProductMs");
-            _collection = _database.GetCollection<GetProductDto>("Products");
+            _collection = collection;
 
         }
-        
+        public RabbitMQConsumer() { }
 
         public async Task ConsumeMessagesAsync(string queueName)
         {
@@ -72,14 +74,8 @@ namespace ProductsMS.Infrastructure.RabbitMQ.Consumer
                     {
                         var filter = Builders<GetProductDto>.Filter.Eq("ProductId", eventMessageD.Data.ProductId);
                         await _collection.DeleteOneAsync(filter);
-                        Console.WriteLine($"Usuario eliminado en MongoDB con ID: {eventMessageD.Data.ProductUserId}");
+                        Console.WriteLine($"Producto eliminado en MongoDB con ID: {eventMessageD.Data.ProductId}");
                     }
-                    else if (eventMessageD?.EventType == "CATEGORY_CREATED")
-                    {
-                        await _collection.InsertOneAsync(eventMessageD.Data);
-                        Console.WriteLine($"Category insertado en MongoDB: {JsonConvert.SerializeObject(eventMessageD.Data)}");
-                    }
-
 
                     await Task.Run(() => channel.BasicAckAsync(ea.DeliveryTag, false));
                 }

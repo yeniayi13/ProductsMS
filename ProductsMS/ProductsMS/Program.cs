@@ -1,7 +1,9 @@
 
+using System.Net.Http.Headers;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using ProductosMs;
 using ProductosMs.Application;
 using ProductsMs.Infrastructure;
@@ -13,14 +15,15 @@ using ProductsMS.Core.RabbitMQ;
 using ProductsMS.Infrastructure.RabbitMQ.Connection;
 using ProductsMS.Infrastructure.RabbitMQ.Consumer;
 using ProductsMS.Infrastructure.RabbitMQ;
-using ProductsMS.Common.Dtos.Category.Request;
 using ProductsMS.Common.Dtos.Category.Response;
 using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMs.Domain.Entities.Category;
 using ProductsMs.Domain.Entities.Products;
-using ProductsMS.Core.Service.Firebase;
-using ProductsMS.Infrastructure.Services.Firebase;
+using ProductsMS.Core.Service.User;
+using ProductsMS.Infrastructure.Services.User;
+using RabbitMQ.Client;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,12 +46,19 @@ foreach (var profileType in profileTypes)
 }
 
 
+
+
 builder.Services.AddSingleton<IApplicationDbContextMongo>(sp =>
 {
     const string connectionString = "mongodb+srv://yadefreitas19:08092001@cluster0.owy2d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
     var databaseName = "ProductMs";
     return new ApplicationDbContextMongo(connectionString, databaseName);
 });
+
+builder.Services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
+builder.Services.AddSingleton<IConnectionRabbbitMQ, RabbitMQConnection>();
+
+builder.Services.AddHostedService<RabbitMQBackgroundService>();
 
 builder.Services.AddScoped(sp =>
 {
@@ -63,62 +73,62 @@ builder.Services.AddScoped(sp =>
 });
 
 
-builder.Services.AddSingleton<RabbitMQConnection>(provider =>
+builder.Services.AddSingleton<IConnectionFactory>(provider =>
 {
-    var rabbitMQConnection = new RabbitMQConnection();
-    rabbitMQConnection.InitializeAsync().Wait(); //  Inicialización segura
+    return new ConnectionFactory
+    {
+        HostName = "localhost",
+        Port = 5672,
+        UserName = "guest",
+        Password = "guest",
+    };
+});
+
+// ?? Registrar `RabbitMQConnection` pasando `IConnectionFactory` en el constructor
+builder.Services.AddSingleton<IConnectionRabbbitMQ>(provider =>
+{
+    var connectionFactory = provider.GetRequiredService<IConnectionFactory>();
+    var rabbitMQConnection = new RabbitMQConnection(connectionFactory);
+    rabbitMQConnection.InitializeAsync().Wait(); // ?? Ejecutar inicialización antes de inyectarlo
     return rabbitMQConnection;
-});
+}); builder.Services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
 
-// Usa la misma instancia de `RabbitMQConnection` para el Producer
-builder.Services.AddSingleton<IEventBus<CreateCategoryDto>>(provider =>
-{
-    var rabbitMQConnection = provider.GetRequiredService<RabbitMQConnection>();
-    return new RabbitMQProducer<CreateCategoryDto>(rabbitMQConnection);
-});
-
-builder.Services.AddSingleton<IEventBus<UpdateCategoryDto>>(provider =>
-{
-    var rabbitMQConnection = provider.GetRequiredService<RabbitMQConnection>();
-    return new RabbitMQProducer<UpdateCategoryDto>(rabbitMQConnection);
-});
-
-
-builder.Services.AddSingleton<IEventBus<GetCategoryDto>>(provider =>
-{
-    var rabbitMQConnection = provider.GetRequiredService<RabbitMQConnection>();
-    return new RabbitMQProducer<GetCategoryDto>(rabbitMQConnection);
-});
-
+// ?? Ahora los Producers pueden usar `RabbitMQConnection`
 
 builder.Services.AddSingleton<IEventBus<CreateProductDto>>(provider =>
 {
-    var rabbitMQConnection = provider.GetRequiredService<RabbitMQConnection>();
+    var rabbitMQConnection = provider.GetRequiredService<IConnectionRabbbitMQ>();
     return new RabbitMQProducer<CreateProductDto>(rabbitMQConnection);
 });
 
 builder.Services.AddSingleton<IEventBus<UpdateProductDto>>(provider =>
 {
-    var rabbitMQConnection = provider.GetRequiredService<RabbitMQConnection>();
+    var rabbitMQConnection = provider.GetRequiredService<IConnectionRabbbitMQ>();
     return new RabbitMQProducer<UpdateProductDto>(rabbitMQConnection);
 });
 
-
 builder.Services.AddSingleton<IEventBus<GetProductDto>>(provider =>
 {
-    var rabbitMQConnection = provider.GetRequiredService<RabbitMQConnection>();
+    var rabbitMQConnection = provider.GetRequiredService<IConnectionRabbbitMQ>();
     return new RabbitMQProducer<GetProductDto>(rabbitMQConnection);
 });
 
+builder.Services.AddSingleton<IMongoCollection<GetProductDto>>(provider =>
+{
+    var mongoClient = new MongoClient("mongodb+srv://yadefreitas19:08092001@cluster0.owy2d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
+    var database = mongoClient.GetDatabase("ProductMs");
+    return database.GetCollection<GetProductDto>("Products");
+});
 
-
-
-//  Usa la misma instancia de `RabbitMQConnection` para el Consumer
+// ?? Registrar `RabbitMQConsumer` solo una vez
 builder.Services.AddSingleton<RabbitMQConsumer>(provider =>
 {
-    var rabbitMQConnection = provider.GetRequiredService<RabbitMQConnection>();
-    return new RabbitMQConsumer(rabbitMQConnection);
+   
+    var rabbitMQConnection = provider.GetRequiredService<IConnectionRabbbitMQ>();
+    var productCollection = provider.GetRequiredService<IMongoCollection<GetProductDto>>();
+    return new RabbitMQConsumer(rabbitMQConnection, productCollection);
 });
+
 
 // Iniciar el consumidor automáticamente con `RabbitMQBackgroundService`
 builder.Services.AddHostedService<RabbitMQBackgroundService>();
@@ -147,13 +157,13 @@ builder.Services.Configure<HttpClientUrl>(
     builder.Configuration.GetSection("HttpClientAddress"));
 
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddHttpClient<IUserService, UserService>();
+builder.Services.AddHttpClient<IUserService, UserService>();
 
 //Configurar Firebase Storage Settings desde appsettings.json
-builder.Services.Configure<FirebaseStorageSettings>(builder.Configuration.GetSection("Firebase"));
+
 
 // Agregar el cliente de Firebase Storage
-builder.Services.AddSingleton<IFirebaseStorageService, FirebaseStorageService>();
+//builder.Services.AddSingleton<IFirebaseStorageService, FirebaseStorageService>();
 
 
 var app = builder.Build();

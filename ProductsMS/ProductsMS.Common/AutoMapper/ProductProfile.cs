@@ -8,9 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using ProductsMs.Domain.Entities.Products;
 using ProductsMS.Common.Dtos.Product.Response;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProductsMS.Common.AutoMapper
 {
+    [ExcludeFromCodeCoverage]
     public class ProductProfile : Profile
     {
         public ProductProfile()
@@ -18,7 +20,7 @@ namespace ProductsMS.Common.AutoMapper
             CreateMap<ProductEntity, GetProductDto>()
             .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId.Value))
             .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ProductName.Value))
-            .ForMember(dest => dest.ProductImage, opt => opt.MapFrom(src => src.ProductImage.Url))
+            .ForMember(dest => dest.ProductImage, opt => opt.MapFrom(src => src.ProductImage.Base64Data))
             .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.ProductPrice.Value))
             .ForMember(dest => dest.ProductDescription, opt => opt.MapFrom(src => src.ProductDescription.Value))
             .ForMember(dest => dest.ProductStock, opt => opt.MapFrom(src => src.ProductStock.Value))

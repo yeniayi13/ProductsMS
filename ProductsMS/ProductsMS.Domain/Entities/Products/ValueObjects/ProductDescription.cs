@@ -2,12 +2,14 @@
 //using ProductsMS.Common.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
 {
+    [ExcludeFromCodeCoverage]
     public partial class ProductDescription
     {
         private ProductDescription(string value) => Value = value;

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Firebase.Auth;
+//using Firebase.Auth;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using ProductsMs.Core.Database;
@@ -163,9 +163,11 @@ namespace ProductsMs.Infrastructure.Repositories
             return productEntities;
         }
 
+
+
         public async Task DeleteAsync(ProductId id)
         {
-            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            var product = await _dbContext.Products.FindAsync(id);
             //if (department == null) throw new DepartmentNotFoundException("department not found");
             _dbContext.Products.Remove(product);
             //department.IsDeleted = true;
@@ -178,9 +180,9 @@ namespace ProductsMs.Infrastructure.Repositories
             await _dbContext.SaveEfContextChanges("");
             return product;
         }
-        public Task<bool> ExistsAsync(ProductId id)
+       /* public Task<bool> ExistsAsync(ProductId id)
         {
             return _dbContext.Products.AnyAsync(x => x.ProductId == id);
-        }
+        }*/
     }
 }
