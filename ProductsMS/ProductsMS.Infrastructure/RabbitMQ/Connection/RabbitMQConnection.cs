@@ -16,22 +16,38 @@ public class RabbitMQConnection : IConnectionRabbbitMQ
 
     public async Task InitializeAsync()
     {
-        // 🔹 Usa la instancia inyectada en el constructor
-        _connection = await _connectionFactory.CreateConnectionAsync(CancellationToken.None);
+        int retries = 10;
+        int delay = 3000; // 3 seconds
 
-        if (_connection == null)
+        for (int i = 0; i < retries; i++)
         {
-            throw new InvalidOperationException("No se pudo establecer la conexión con RabbitMQ.");
+            try
+            {
+                _connection = await _connectionFactory.CreateConnectionAsync(CancellationToken.None);
+
+                if (_connection == null)
+                {
+                    throw new InvalidOperationException("No se pudo establecer la conexión con RabbitMQ.");
+                }
+
+                _channel = await _connection.CreateChannelAsync();
+
+                if (_channel == null)
+                {
+                    throw new InvalidOperationException("No se pudo crear el canal de comunicación con RabbitMQ.");
+                }
+
+                await _channel.QueueDeclareAsync("productQueue", true, false, false);
+                return; // Success!
+            }
+            catch (Exception ex)
+            {
+                if (i == retries - 1)
+                    throw; // Last try, rethrow
+                Console.WriteLine($"RabbitMQ not ready, retrying in {delay / 1000} seconds... ({ex.Message})");
+                await Task.Delay(delay);
+            }
         }
-
-        _channel = await _connection.CreateChannelAsync();
-
-        if (_channel == null)
-        {
-            throw new InvalidOperationException("No se pudo crear el canal de comunicación con RabbitMQ.");
-        }
-
-        await _channel.QueueDeclareAsync("productQueue", true, false, false);
     }
 
     public IChannel GetChannel()

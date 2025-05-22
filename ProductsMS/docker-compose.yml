@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  productsms:
+    build:
+      context: .
+      dockerfile: ./ProductsMS/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__PostgresSQLConnection=Host=postgres;Port=5432;Database=ProductMs;Username=postgres;Password=yeniree0813
+      - Keycloak__AuthorizationUrl=http://keycloak:8080/realms/auth/protocol/openid-connect/auth
+      - Authentication__MetadataAddress=http://keycloak:8080/realms/auth/.well-known/openid-configuration
+      - Authentication__ValidIssuer=http://keycloak:8080/realms/auth
+      - Authentication__Audience=account
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+    depends_on:
+      - postgres
+      - keycloak
+      - rabbitmq
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ProductMs
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yeniree0813
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.2
+    command: start-dev --http-port=8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "18080:8080"
+    depends_on:
+      - postgres
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

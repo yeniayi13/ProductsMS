@@ -1,4 +1,3 @@
-
 using System.Net.Http.Headers;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
@@ -23,7 +22,6 @@ using ProductsMs.Domain.Entities.Products;
 using ProductsMS.Core.Service.User;
 using ProductsMS.Infrastructure.Services.User;
 using RabbitMQ.Client;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,13 +61,13 @@ builder.Services.AddHostedService<RabbitMQBackgroundService>();
 builder.Services.AddScoped(sp =>
 {
     var dbContext = sp.GetRequiredService<IApplicationDbContextMongo>();
-    return dbContext.Database.GetCollection<CategoryEntity>("Categories"); // Nombre de la colección en MongoDB
+    return dbContext.Database.GetCollection<CategoryEntity>("Categories"); // Nombre de la colecciï¿½n en MongoDB
 });
 
 builder.Services.AddScoped(sp =>
 {
     var dbContext = sp.GetRequiredService<IApplicationDbContextMongo>();
-    return dbContext.Database.GetCollection<ProductEntity>("Products"); // Nombre de la colección en MongoDB
+    return dbContext.Database.GetCollection<ProductEntity>("Products"); // Nombre de la colecciï¿½n en MongoDB
 });
 
 
@@ -77,10 +75,10 @@ builder.Services.AddSingleton<IConnectionFactory>(provider =>
 {
     return new ConnectionFactory
     {
-        HostName = "localhost",
-        Port = 5672,
-        UserName = "guest",
-        Password = "guest",
+        HostName = Environment.GetEnvironmentVariable("RabbitMQ__HostName") ?? "localhost",
+        Port = int.TryParse(Environment.GetEnvironmentVariable("RabbitMQ__Port"), out var port) ? port : 5672,
+        UserName = Environment.GetEnvironmentVariable("RabbitMQ__UserName") ?? "guest",
+        Password = Environment.GetEnvironmentVariable("RabbitMQ__Password") ?? "guest",
     };
 });
 
@@ -89,7 +87,7 @@ builder.Services.AddSingleton<IConnectionRabbbitMQ>(provider =>
 {
     var connectionFactory = provider.GetRequiredService<IConnectionFactory>();
     var rabbitMQConnection = new RabbitMQConnection(connectionFactory);
-    rabbitMQConnection.InitializeAsync().Wait(); // ?? Ejecutar inicialización antes de inyectarlo
+    rabbitMQConnection.InitializeAsync().Wait(); // ?? Ejecutar inicializaciï¿½n antes de inyectarlo
     return rabbitMQConnection;
 }); builder.Services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
 
@@ -130,7 +128,7 @@ builder.Services.AddSingleton<RabbitMQConsumer>(provider =>
 });
 
 
-// Iniciar el consumidor automáticamente con `RabbitMQBackgroundService`
+// Iniciar el consumidor automï¿½ticamente con `RabbitMQBackgroundService`
 builder.Services.AddHostedService<RabbitMQBackgroundService>();
 
 
