@@ -1,8 +1,10 @@
 ﻿//using ProductsMS.Common.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Category.ValueObject
 {
+    [ExcludeFromCodeCoverage]
     public partial class CategoryName
     {
         private const string Pattern = @"^[a-zA-Z]+$";

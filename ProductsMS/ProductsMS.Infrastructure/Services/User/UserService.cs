@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Options;
 using ProductsMS.Core.Service.User;
 using ProductsMs.Infrastructure;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 using Microsoft.AspNetCore.Http;
+using ProductsMS.Common.Dtos.Product.Response;
+using ProductsMS.Common.Exceptions;
 
 namespace ProductsMS.Infrastructure.Services.User
 {
@@ -19,20 +22,39 @@ namespace ProductsMS.Infrastructure.Services.User
 
             //* Configuracion del HttpClient
             var headerToken = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
-            _httpClient.BaseAddress = new Uri(_httpClientUrl);
+            _httpClient.BaseAddress = new Uri("http://localhost:18084/");
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {headerToken}");
         }
 
-        public async Task<bool> AuctioneerExists(ProductUserId productUserId)
+        public async Task<GetUser> AuctioneerExists(Guid productUserId)
         {
             try
             {
-                var response = await _httpClient.GetAsync($"user/driver/{productUserId.Value}");
+                var response = await _httpClient.GetAsync($"user/auctioneer/{productUserId}");
+
                 if (!response.IsSuccessStatusCode)
                 {
-                    //throw new NotFoundException("Driver not found");
+                    throw new HttpRequestException($"Error al obtener usuario: {response.StatusCode}");
                 }
-                return true;
+
+                await using var responseStream = await response.Content.ReadAsStreamAsync();
+
+                if (responseStream == null)
+                {
+                    throw new InvalidOperationException("El contenido de la respuesta es nulo.");
+                }
+
+                // 🔹 Asegurar que `responseStream` contiene datos antes de deserializar
+                var user = await JsonSerializer.DeserializeAsync<GetUser>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (user == null)
+                {
+                    throw new InvalidOperationException("No se pudo deserializar el usuario.");
+                }
+
+                Console.WriteLine($"User ID: {user.UserId}, Name: {user.UserName}");
+
+                return user;
             }
             catch
             {

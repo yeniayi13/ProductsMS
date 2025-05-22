@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductsMS.Common.Exceptions
 {
+    [ExcludeFromCodeCoverage]
+
     public class CategoryNotFoundException : Exception
     {
         public CategoryNotFoundException() { }

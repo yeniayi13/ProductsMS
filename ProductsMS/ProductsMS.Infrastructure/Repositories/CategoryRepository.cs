@@ -1,7 +1,7 @@
 ﻿
 
 using AutoMapper;
-using Firebase.Auth;
+//using Firebase.Auth;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using ProductsMs.Core.Database;
@@ -15,36 +15,25 @@ namespace ProductsMs.Infrastructure.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly IApplicationDbContext _dbContext;
+        //private readonly IApplicationDbContext _dbContext;
         private readonly IMongoCollection<CategoryEntity> _collection;
         private readonly IMapper _mapper; // Agregar el Mapper
 
 
-        public CategoryRepository(IApplicationDbContext dbContext, IMongoCollection<CategoryEntity> collection, IMapper mapper)
+        public CategoryRepository( IMongoCollection<CategoryEntity> collection, IMapper mapper)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            //_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _collection = collection ?? throw new ArgumentNullException(nameof(collection));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); // Inyectar el Mapper
         }
 
 
-        public async Task AddAsync(CategoryEntity category)
-        {
-            try
-            {
-                await _dbContext.Categories.AddAsync(category);
-                await _dbContext.SaveEfContextChanges("").ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al registrar la categoría: {ex.Message}");
-                throw new Exception("Error al registrar la categoría", ex);
-            }
-        }
-
+       
         public async Task<List<CategoryEntity>> GetAllAsync()
         {
-            var projection = Builders<CategoryEntity>.Projection.Exclude("_id"); // Excluir _id para evitar conflictos con MongoDB
+            var projection = Builders<CategoryEntity>.Projection.Exclude("_id").Exclude("CreatedAt").Exclude("CreatedBy");
+
+            // Excluir _id para evitar conflictos con MongoDB
 
             Console.WriteLine("Consulta de categorías en proceso...");
 
@@ -72,7 +61,8 @@ namespace ProductsMs.Infrastructure.Repositories
             Console.WriteLine($"Buscando categoría con ID: {id.Value}");
 
             var filter = Builders<CategoryEntity>.Filter.Eq("CategoryId", id.Value);
-            var projection = Builders<CategoryEntity>.Projection.Exclude("_id");
+            var projection = Builders<CategoryEntity>.Projection.Exclude("_id").Exclude("CreatedAt").Exclude("CreatedBy").Exclude("UpdateAt").Exclude("UpdateBy");
+
 
             var categoryDto = await _collection
                 .Find(filter)
@@ -98,7 +88,9 @@ namespace ProductsMs.Infrastructure.Repositories
             Console.WriteLine($"Buscando categoría con nombre: {name.Value}");
 
             var filter = Builders<CategoryEntity>.Filter.Eq("CategoryName", name.Value);
-            var projection = Builders<CategoryEntity>.Projection.Exclude("_id");
+            var projection = Builders<CategoryEntity>.Projection.Exclude("_id").Exclude("CreatedAt")
+                .Exclude("CreatedBy").Exclude("UpdateAt").Exclude("UpdateBy");
+
 
             var categoryDto = await _collection
                 .Find(filter)
@@ -119,24 +111,9 @@ namespace ProductsMs.Infrastructure.Repositories
             return categoryEntity;
         }
 
-        public async Task DeleteAsync(CategoryId id)
-        {
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
-            //if (department == null) throw new DepartmentNotFoundException("department not found");
-            _dbContext.Categories.Remove(category);
-            //department.IsDeleted = true;
-            await _dbContext.SaveEfContextChanges("");
-        }
-
-        public async Task<CategoryEntity?> UpdateAsync(CategoryEntity category)
-        {
-            _dbContext.Categories.Update(category);
-            await _dbContext.SaveEfContextChanges("");
-            return category;
-        }
-        public Task<bool> ExistsAsync(CategoryId id)
+      /*  public Task<bool> ExistsAsync(CategoryId id)
         {
             return _dbContext.Categories.AnyAsync(x => x.CategoryId == id);
-        }
+        }*/
     }
 }

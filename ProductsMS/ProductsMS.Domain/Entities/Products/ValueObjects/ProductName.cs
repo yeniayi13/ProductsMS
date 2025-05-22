@@ -1,8 +1,10 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
 {
+    [ExcludeFromCodeCoverage]
     public partial class ProductName
     {
         private const string Pattern = @"^[a-zA-Z]+$";

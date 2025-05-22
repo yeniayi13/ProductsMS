@@ -1,8 +1,11 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
 {
+
+    [ExcludeFromCodeCoverage]
     public partial class ProductPrice
     {
           private const string Pattern = @"^\d+\.\d{2}$";

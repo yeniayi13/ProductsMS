@@ -2,12 +2,14 @@
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductsMS.Domain.Entities.Products.ValueObjects
 {
+    [ExcludeFromCodeCoverage]
     public class ProductUserId
     {
         private ProductUserId(Guid value) => Value = value;

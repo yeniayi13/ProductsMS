@@ -10,8 +10,8 @@ namespace ProductsMS.Common.Dtos.Category.Response
     {
         public bool IsDeleted;
 
-        public Guid CategoryId { get; init; }
-        public string? CategoryName { get; init; }
+        public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; }
 
 
        

@@ -2,12 +2,15 @@
 using ProductsMs.Domain.Entities.Products;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductsMS.Infrastructure.Database.Configuration.Mongo
 {
+
+    [ExcludeFromCodeCoverage]
     public class ProductConfigurationMongo
     {
         public static void Configure(IMongoCollection<ProductEntity> collection)

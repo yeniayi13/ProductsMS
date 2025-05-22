@@ -4,6 +4,7 @@ using ProductsMs.Domain.Entities.Category.ValueObject;
 using ProductsMs.Domain.Entities.Products;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Application.Products.Commands;
+using ProductsMS.Application.Products.Validator.Products;
 using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Enum;
 using ProductsMS.Common.Exceptions;
@@ -27,10 +28,25 @@ namespace ProductsMS.Application.Products.Handlers.Commands
         {
             try
             {
-               Console.WriteLine($"Actualizando producto: {request.Id} para el usuario: {request.UserId}"); // Agregar log para depuración
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+                }
+
+                if (request.Product == null)
+                {
+                    throw new ArgumentNullException(nameof(request.Product), "Product cannot be null.");
+                }
+
                 var oldProduct = await _productRepository.GetByIdAsync(ProductId.Create(request.Id)!,ProductUserId.Create(request.UserId)!);
 
-
+                //Valido los datos de entrada
+                var validator = new UpdateProductEntityValidator();
+                var validationResult = await validator.ValidateAsync(request.Product, cancellationToken);
+                if (!validationResult.IsValid)
+                {
+                    throw new FluentValidation.ValidationException(validationResult.Errors);
+                }
                 if (oldProduct == null) throw new ProductNotFoundException("Product not found");
 
                 // Validación adicional en `ProductAvailability`
@@ -43,7 +59,7 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                 var updatedProduct = ProductEntity.Update(
                     oldProduct, // Se debe proporcionar la entidad base para la actualización
                     request.Product.ProductName != null ? ProductName.Create(request.Product.ProductName) : oldProduct.ProductName,
-                    request.Product.ProductImage != null ? ProductImage.Create(request.Product.ProductImage) : oldProduct.ProductImage,
+                    request.Product.ProductImage != null ? ProductImage.FromBase64(request.Product.ProductImage) : oldProduct.ProductImage,
                     request.Product.ProductPrice != null ? ProductPrice.Create(request.Product.ProductPrice) : oldProduct.ProductPrice,
                     request.Product.ProductDescription != null ? ProductDescription.Create(request.Product.ProductDescription) : oldProduct.ProductDescription,
                     productAvailability,
@@ -63,8 +79,8 @@ namespace ProductsMS.Application.Products.Handlers.Commands
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en UpdateProductCommandHandler: {ex.Message}");
                 throw;
+
             }
         }
     }

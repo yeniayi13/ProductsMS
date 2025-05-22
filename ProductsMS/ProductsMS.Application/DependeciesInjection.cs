@@ -8,6 +8,7 @@ using ProductsMS.Application;
 
 namespace ProductosMs.Application
 {
+    
     public static class DependecyInjection
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)

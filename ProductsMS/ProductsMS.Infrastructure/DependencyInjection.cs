@@ -6,10 +6,14 @@ using ProductsMs.Core.Repository;
 using ProductsMs.Infrastructure.Repositories;
 using ProductsMS.Common.Primitives;
 using ProductsMS.Infrastructure.Database.Context.Postgres;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace ProductsMs.Infrastructure
 {
+
+    [ExcludeFromCodeCoverage]
+
     public static class DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)

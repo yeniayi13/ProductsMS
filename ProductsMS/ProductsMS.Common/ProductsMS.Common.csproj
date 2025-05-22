@@ -15,4 +15,8 @@
     <ProjectReference Include="..\ProductsMS.Domain\ProductsMS.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dtos\Category\Request\" />
+  </ItemGroup>
+
 </Project>

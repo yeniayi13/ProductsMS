@@ -1,6 +1,9 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
+
 namespace ProductsMs.Domain.Entities.Products.ValueObjects
 {
+    [ExcludeFromCodeCoverage]
     public class ProductId
     {
         private ProductId(Guid value) => Value = value;

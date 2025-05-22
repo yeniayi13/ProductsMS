@@ -10,8 +10,6 @@ namespace UserMs.Core.Database
     public interface IApplicationDbContextMongo
     {
         IMongoDatabase Database { get; }
-
-
         IClientSessionHandle BeginTransaction();
     }
 }

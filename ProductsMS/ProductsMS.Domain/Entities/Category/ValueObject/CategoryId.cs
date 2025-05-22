@@ -1,7 +1,10 @@
 ﻿
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ProductsMs.Domain.Entities.Category.ValueObject
 {
+    [ExcludeFromCodeCoverage]
     public class CategoryId
     {
         public Guid Value { get; init; }

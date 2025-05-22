@@ -99,6 +99,19 @@
         "build": {
           "buildTransitive/net6.0/_._": {}
         }
+      },
+      "ProductsMS.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "MediatR": "12.5.0"
+        },
+        "compile": {
+          "bin/placeholder/ProductsMS.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ProductsMS.Domain.dll": {}
+        }
       }
     }
   },
@@ -257,12 +270,18 @@
         "microsoft.extensions.primitives.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "ProductsMS.Domain/1.0.0": {
+      "type": "project",
+      "path": "../ProductsMS.Domain/ProductsMS.Domain.csproj",
+      "msbuildProject": "../ProductsMS.Domain/ProductsMS.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "AutoMapper >= 14.0.0",
-      "MediatR >= 12.5.0"
+      "MediatR >= 12.5.0",
+      "ProductsMS.Domain >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -297,7 +316,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Domain\\ProductsMS.Domain.csproj": {
+              "projectPath": "C:\\Users\\LENOVO\\ProductsMS\\ProductsMS\\ProductsMS.Domain\\ProductsMS.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

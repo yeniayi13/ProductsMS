@@ -13,12 +13,10 @@ namespace ProductsMs.Core.Repository
 {
     public interface ICategoryRepository
     {
-        Task<CategoryEntity?> GetByIdAsync(CategoryId id/*, Expression<Func<Provider, object>> include*/);
+        Task<CategoryEntity?> GetByIdAsync(CategoryId id);
 
-        Task<CategoryEntity?> GetByNameAsync(CategoryName name/*, Expression<Func<Provider, object>> include*/);
-        Task AddAsync(CategoryEntity category);
-        Task DeleteAsync(CategoryId id);
+        Task<CategoryEntity?> GetByNameAsync(CategoryName name);
+       
         Task<List<CategoryEntity>> GetAllAsync();
-        Task<CategoryEntity?> UpdateAsync(CategoryEntity category);
     }
 }

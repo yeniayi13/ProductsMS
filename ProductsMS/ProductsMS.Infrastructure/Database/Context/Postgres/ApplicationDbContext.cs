@@ -16,16 +16,13 @@ namespace ProductsMS.Infrastructure.Database.Context.Postgres
     {
         //*Nos ayudara con los eventos de dominio
         private readonly IPublisher _publisher;
-        private ApplicationDbContext(
-          DbContextOptions<ApplicationDbContext> options, IPublisher publisher)
+        public ApplicationDbContext(
+          DbContextOptions<ApplicationDbContext> options)
           : base(options)
         {
-            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
+           // _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         }
 
-        public ApplicationDbContext(DbContextOptions options) : base(options)
-        {
-        }
 
         public DbContext DbContext
         {
@@ -76,12 +73,6 @@ namespace ProductsMS.Infrastructure.Database.Context.Postgres
             CancellationToken cancellationToken = default
         )
         {
-            var domainEvents = ChangeTracker
-                .Entries<AggregateRoot>()//* Evaluara todas las entidades de ese tipo
-                .Select(e => e.Entity) //* Seleccionara 1
-                .Where(e => e.GetDomainEvents().Any()) //* Vera cuales tiene algun evento
-                .SelectMany(e => e.GetDomainEvents()); //* Agarrara ese listado de evento
-
             var entries = ChangeTracker
                 .Entries()
                 .Where(e =>
@@ -91,31 +82,28 @@ namespace ProductsMS.Infrastructure.Database.Context.Postgres
 
             foreach (var entityEntry in entries)
             {
+                var entity = (AggregateRoot)entityEntry.Entity;
+
                 if (entityEntry.State == EntityState.Added)
                 {
-                    ((AggregateRoot)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
-                    ((AggregateRoot)entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
+                    entity.CreatedAt = DateTime.UtcNow;
+                    entity.UpdatedAt = DateTime.UtcNow;
                 }
 
                 if (entityEntry.State == EntityState.Modified)
                 {
-                    ((AggregateRoot)entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
-                    Entry((AggregateRoot)entityEntry.Entity).Property(x => x.CreatedAt).IsModified =
-                        false;
-                    Entry((AggregateRoot)entityEntry.Entity).Property(x => x.CreatedBy).IsModified =
-                        false;
+                    entity.UpdatedAt = DateTime.UtcNow;
+
+                    // Marcar explícitamente que `UpdatedAt` está modificado
+                    Entry(entity).Property(x => x.UpdatedAt).IsModified = true;
+
+                    // Evitar cambios accidentales en `CreatedAt` y `CreatedBy`
+                    Entry(entity).Property(x => x.CreatedAt).IsModified = false;
+                    Entry(entity).Property(x => x.CreatedBy).IsModified = false;
                 }
             }
 
-            var result = await base.SaveChangesAsync(cancellationToken);
-
-            //* Los eventos son recorrridos y publicaods en un pipeline
-            foreach (var domainEvent in domainEvents)
-            {
-                await _publisher.Publish(domainEvent, cancellationToken);
-            }
-
-            return result;
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<int> SaveChangesAsync(
@@ -155,9 +143,9 @@ namespace ProductsMS.Infrastructure.Database.Context.Postgres
             return await base.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<bool> SSaveEfContextChanges(CancellationToken cancellationToken = default)
+        public async Task<bool> SaveEfContextChanges(CancellationToken cancellationToken = default)
         {
-            return await SaveChangesAsync(cancellationToken) >= 0;
+            return await SaveChangesAsync(cancellationToken) > 0;
         }
 
         public async Task<bool> SaveEfContextChanges(
@@ -165,7 +153,7 @@ namespace ProductsMS.Infrastructure.Database.Context.Postgres
             CancellationToken cancellationToken = default
         )
         {
-            return await SaveChangesAsync(user, cancellationToken) >= 0;
+            return await SaveChangesAsync(user, cancellationToken) > 0;
         }
     }
 }

@@ -2,6 +2,7 @@
 using ProductsMs.Domain.Entities.Category;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ using UserMs.Core.Database;
 
 namespace ProductsMS.Infrastructure.Database.Context.Mongo
 {
+
+    [ExcludeFromCodeCoverage]
     public class ApplicationDbContextMongo : IApplicationDbContextMongo
     {
         private readonly IMongoDatabase _database;
