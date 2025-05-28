@@ -30,7 +30,231 @@ namespace ProductsMS.Test.Controllers
             _controller = new CategoryController(_mockLogger.Object, _mockMediator.Object);
         }
 
+        [Fact]
+        public async Task GetAllCategories_ShouldThrowUnauthorizedAccessException_WhenUserIsNotAuthorized()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new UnauthorizedAccessException("No tienes permisos para esta acción."));
 
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(401, result.StatusCode);
+            Assert.Contains("No tienes permisos para acceder a este recurso.", result.Value.ToString());
+        }
+
+      
+        [Fact]
+        public async Task GetAllCategories_ShouldReturnOk_WhenCategoriesExist()
+        {
+            var expectedCategories = new List<GetCategoryDto> { new GetCategoryDto { CategoryId = Guid.NewGuid() } };
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ReturnsAsync(expectedCategories);
+
+            var result = await _controller.GetAllCategories() as OkObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(200, result.StatusCode);
+            Assert.Equal(expectedCategories, result.Value);
+        }
+
+        [Fact]
+        public async Task GetAllCategories_ShouldReturnNotFound_WhenNoCategoriesExist()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new CategoryNotFoundException("No hay categorías disponibles."));
+
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(404, result.StatusCode);
+            Assert.Contains("Categoría no encontrada", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetAllCategories_ShouldThrowNullAttributeException_WhenDataIsNull()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new NullAttributeException("Datos nulos detectados."));
+
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(400, result.StatusCode);
+            Assert.Contains("Atributo nulo detectado", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetAllCategories_ShouldThrowInvalidAttributeException_WhenDataIsInvalid()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new InvalidAttributeException("Atributos inválidos detectados."));
+
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(400, result.StatusCode);
+            Assert.Contains("Atributo inválido detectado", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetAllCategories_ShouldThrowTimeoutException_WhenRequestTimesOut()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new TimeoutException("Tiempo de espera excedido."));
+
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(500, result.StatusCode);
+            Assert.Contains("Ocurrió un error inesperado al intentar", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetAllCategories_ShouldThrowHttpRequestException_WhenAuthenticationFails()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new HttpRequestException("401 Unauthorized"));
+
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(401, result.StatusCode);
+            Assert.Contains("Acceso denegado. Verifica tus credenciales.", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetAllCategories_ShouldThrowHttpRequestException_WhenServiceUnavailable()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new HttpRequestException("503 Service Unavailable"));
+
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(500, result.StatusCode);
+            Assert.Contains("Ocurrió un error inesperado al intentar", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetAllCategories_ShouldThrowInternalServerError_WhenUnexpectedExceptionOccurs()
+        {
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), default))
+                .ThrowsAsync(new Exception("Error inesperado"));
+
+            var result = await _controller.GetAllCategories() as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(500, result.StatusCode);
+            Assert.Contains("Ocurrió un error inesperado al intentar buscar categorías.", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategoryName_ShouldReturnOk_WhenCategoryExists()
+        {
+            var categoryName = "Tecnología";
+            var expectedCategory = new GetCategoryDto { CategoryName = categoryName };
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), default))
+                .ReturnsAsync(expectedCategory);
+
+            var result = await _controller.GetCategoryName(categoryName) as OkObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(200, result.StatusCode);
+            Assert.Equal(expectedCategory, result.Value);
+        }
+
+        [Fact]
+        public async Task GetCategoryName_ShouldReturnNotFound_WhenCategoryDoesNotExist()
+        {
+            var categoryName = "NoExistente";
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), default))
+                .ThrowsAsync(new CategoryNotFoundException("Categoría no encontrada"));
+
+            var result = await _controller.GetCategoryName(categoryName) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(404, result.StatusCode);
+            Assert.Contains("Categoría no encontrada", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategoryName_ShouldThrowNullAttributeException_WhenDataIsNull()
+        {
+            var categoryName = "Electrónica";
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), default))
+                .ThrowsAsync(new NullAttributeException("Atributo nulo detectado"));
+
+            var result = await _controller.GetCategoryName(categoryName) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(400, result.StatusCode);
+            Assert.Contains("Atributo nulo detectado", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategoryName_ShouldThrowInvalidAttributeException_WhenDataIsInvalid()
+        {
+            var categoryName = "CategoríaErronea";
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), default))
+                .ThrowsAsync(new InvalidAttributeException("Atributo inválido detectado"));
+
+            var result = await _controller.GetCategoryName(categoryName) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(400, result.StatusCode);
+            Assert.Contains("Atributo inválido detectado", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategoryName_ShouldThrowHttpRequestException_WhenAuthenticationFails()
+        {
+            var categoryName = "Ropa";
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), default))
+                .ThrowsAsync(new HttpRequestException("401 Unauthorized"));
+
+            var result = await _controller.GetCategoryName(categoryName) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(401, result.StatusCode);
+            Assert.Contains("Acceso denegado. Verifica tus credenciales.", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategoryName_ShouldThrowUnauthorizedAccessException_WhenUserIsNotAuthorized()
+        {
+            var categoryName = "Muebles";
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), default))
+                .ThrowsAsync(new UnauthorizedAccessException("No tienes permisos para esta acción."));
+
+            var result = await _controller.GetCategoryName(categoryName) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(401, result.StatusCode);
+            Assert.Contains("No tienes permisos para acceder a este recurso.", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategoryName_ShouldThrowInternalServerError_WhenUnexpectedExceptionOccurs()
+        {
+            var categoryName = "Electrodomésticos";
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), default))
+                .ThrowsAsync(new Exception("Error inesperado"));
+
+            var result = await _controller.GetCategoryName(categoryName) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(500, result.StatusCode);
+            Assert.Contains("Ocurrió un error inesperado al intentar buscar la categoría.", result.Value.ToString());
+        }
 
         [Fact]
         public async Task GetCategory_ShouldReturnOk_WhenCategoryExists()
@@ -59,6 +283,84 @@ namespace ProductsMS.Test.Controllers
             Assert.False(actualCategory.IsDeleted);
         }
 
+     
+
+        
+
+        [Fact]
+        public async Task GetCategory_ShouldThrowNullAttributeException_WhenDataIsNull()
+        {
+            var categoryId = Guid.NewGuid();
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryQuery>(), default))
+                .ThrowsAsync(new NullAttributeException("Atributo nulo detectado"));
+
+            var result = await _controller.GetCategory(categoryId) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(400, result.StatusCode);
+            Assert.Contains("Atributo nulo detectado", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategory_ShouldThrowInvalidAttributeException_WhenDataIsInvalid()
+        {
+            var categoryId = Guid.NewGuid();
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryQuery>(), default))
+                .ThrowsAsync(new InvalidAttributeException("Atributo inválido detectado"));
+
+            var result = await _controller.GetCategory(categoryId) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(400, result.StatusCode);
+            Assert.Contains("Atributo inválido detectado", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategory_ShouldThrowHttpRequestException_WhenAuthenticationFails()
+        {
+            var categoryId = Guid.NewGuid();
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryQuery>(), default))
+                .ThrowsAsync(new HttpRequestException("401 Unauthorized"));
+
+            var result = await _controller.GetCategory(categoryId) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(401, result.StatusCode);
+            Assert.Contains("Acceso denegado. Verifica tus credenciales.", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategory_ShouldThrowUnauthorizedAccessException_WhenUserIsNotAuthorized()
+        {
+            var categoryId = Guid.NewGuid();
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryQuery>(), default))
+                .ThrowsAsync(new UnauthorizedAccessException("No tienes permisos para esta acción."));
+
+            var result = await _controller.GetCategory(categoryId) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(401, result.StatusCode);
+            Assert.Contains("No tienes permisos para acceder a este recurso.", result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task GetCategory_ShouldThrowInternalServerError_WhenUnexpectedExceptionOccurs()
+        {
+            var categoryId = Guid.NewGuid();
+
+            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryQuery>(), default))
+                .ThrowsAsync(new Exception("Error inesperado"));
+
+            var result = await _controller.GetCategory(categoryId) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(500, result.StatusCode);
+            Assert.Contains("Ocurrió un error inesperado al intentar buscar la categoría.", result.Value.ToString());
+        }
 
         [Fact]
         public async Task GetCategory_ShouldReturnBadRequest_WhenExceptionOccurs()
@@ -73,7 +375,7 @@ namespace ProductsMS.Test.Controllers
             // Assert
             var badRequestResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, badRequestResult.StatusCode);
-            Assert.Equal("An error occurred while trying to search an Category", badRequestResult.Value);
+            Assert.Equal("Ocurrió un error inesperado al intentar buscar la categoría.", badRequestResult.Value);
         }
 
         [Fact]
@@ -89,35 +391,10 @@ namespace ProductsMS.Test.Controllers
             // Assert
             var notFoundResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            Assert.Equal("Category not found", notFoundResult.Value);
+            Assert.Equal("Categoría no encontrada: Category not found", notFoundResult.Value);
         }
 
-        [Fact]
-        public async Task GetCategoryName_ShouldReturnOk_WhenCategoryExists()
-        {
-            // Arrange
-            var expectedCategory = new GetCategoryDto
-            {
-                CategoryId = Guid.NewGuid(),
-                CategoryName = "Books",
-                IsDeleted = false
-            };
-
-            _mockMediator.Setup(m => m.Send(It.IsAny<GetCategoryNameQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedCategory);
-
-            // Act
-            var result = await _controller.GetCategoryName(expectedCategory.CategoryName);
-
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.NotNull(okResult.Value);
-
-            var actualCategory = Assert.IsType<GetCategoryDto>(okResult.Value);
-            Assert.Equal(expectedCategory.CategoryId, actualCategory.CategoryId);
-            Assert.Equal(expectedCategory.CategoryName, actualCategory.CategoryName);
-            Assert.False(actualCategory.IsDeleted);
-        }
+      
 
 
 
@@ -147,7 +424,7 @@ namespace ProductsMS.Test.Controllers
 
             var notFoundResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            Assert.Equal("Category name not found", notFoundResult.Value);
+            Assert.Equal("Categoría no encontrada: Category name not found", notFoundResult.Value);
         }
 
         [Fact]
@@ -160,7 +437,7 @@ namespace ProductsMS.Test.Controllers
 
             var internalServerErrorResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, internalServerErrorResult.StatusCode);
-            Assert.Equal("An error occurred while trying to search an Category", internalServerErrorResult.Value);
+            Assert.Equal("Ocurrió un error inesperado al intentar buscar la categoría.", internalServerErrorResult.Value);
         }
 
         [Fact]
@@ -173,7 +450,7 @@ namespace ProductsMS.Test.Controllers
 
             var internalServerErrorResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, internalServerErrorResult.StatusCode);
-            Assert.Equal("An error occurred while trying to search Category", internalServerErrorResult.Value);
+            Assert.Equal("Ocurrió un error inesperado al intentar buscar categorías.", internalServerErrorResult.Value);
         }
         [Fact]
         public async Task GetAllCategories_ShouldReturnCorrectCategoryData_WhenCategoriesExist()
@@ -217,44 +494,11 @@ namespace ProductsMS.Test.Controllers
 
             var badRequestResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            Assert.Equal("Invalid category ID", badRequestResult.Value);
+            Assert.Equal("Atributo inválido detectado: Invalid category ID", badRequestResult.Value);
         }
 
 
-        [Fact]
-
-        public async Task GetAllCategories_ShouldReturnOk_WhenCategoriesExist()
-        {
-            var expectedCategories = new List<GetCategoryDto>
-            {
-                new GetCategoryDto { CategoryId = Guid.NewGuid(), CategoryName = "Electronics", IsDeleted = false }
-            };
-
-          
-
-
-
-            _mockMediator.Setup(m => m.Send(It.IsAny<GetAllProductsQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedCategories);
-
-            var result = await _controller.GetAllCategories();
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.NotNull(okResult.Value);
-
-            // 🔹 Convertir `CategoryEntity` a `GetCategoryDto` para comparar correctamente
-            var actualCategories = (okResult.Value as List<GetCategoryDto>)?.Select(c => new GetCategoryDto
-            {
-                CategoryId = c.CategoryId,
-                CategoryName = c.CategoryName,
-                IsDeleted = c.IsDeleted
-            }).ToList();
-
-            Assert.Collection(actualCategories,
-                category => Assert.Equal(expectedCategories[0].CategoryId, category.CategoryId)
-               
-            );
-        }
+      
 
         [Fact]
         public async Task GetCategory_ShouldReturnNotFound_WhenCategoryDoesNotExist()
@@ -266,7 +510,7 @@ namespace ProductsMS.Test.Controllers
 
             var notFoundResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            Assert.Equal("Category not found", notFoundResult.Value);
+            Assert.Equal("Categoría no encontrada: Category not found", notFoundResult.Value);
         }
 
         [Fact]
@@ -279,7 +523,7 @@ namespace ProductsMS.Test.Controllers
 
             var badRequestResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            Assert.Equal("Invalid category name", badRequestResult.Value);
+            Assert.Equal("Atributo inválido detectado: Invalid category name", badRequestResult.Value);
         }
 
         [Fact]
@@ -292,7 +536,7 @@ namespace ProductsMS.Test.Controllers
 
             var internalServerErrorResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, internalServerErrorResult.StatusCode);
-            Assert.Equal("An error occurred while trying to search an Category", internalServerErrorResult.Value);
+            Assert.Equal("Ocurrió un error inesperado al intentar buscar la categoría.", internalServerErrorResult.Value);
         }
     }
 

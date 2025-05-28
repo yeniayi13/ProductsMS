@@ -4,7 +4,9 @@ using ProductsMs.Core.Repository;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Application.Products.Commands;
 using ProductsMS.Common.Dtos.Product.Response;
+using ProductsMS.Common.Exceptions;
 using ProductsMS.Core.RabbitMQ;
+using ProductsMS.Core.Repository;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 
 namespace ProductsMS.Application.Products.Handlers.Commands
@@ -12,38 +14,57 @@ namespace ProductsMS.Application.Products.Handlers.Commands
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Guid>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IProductRepositoryMongo _productRepositoryMongo;
         private readonly IEventBus<GetProductDto> _eventBus;
         private readonly IMapper _mapper;
 
-        public DeleteProductCommandHandler(IProductRepository productRepository, IEventBus<GetProductDto> eventBus, IMapper mapper)
+        public DeleteProductCommandHandler(IProductRepositoryMongo productRepositoryMongo,IProductRepository productRepository, IEventBus<GetProductDto> eventBus, IMapper mapper)
         {
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository)); //*Valido que estas inyecciones sean exitosas
             _eventBus = eventBus;
             _mapper = mapper;//*Valido que estas inyecciones sean exitosas
+            _productRepositoryMongo = productRepositoryMongo;
         }
 
         public async Task<Guid> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            if (request == null)
+            try
             {
-                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+                }
+
+                var productId = ProductId.Create(request.ProductId);
+                var userId = ProductUserId.Create(request.UserId);
+
+                var product = await _productRepositoryMongo.GetByIdAsync(productId, userId);
+                if (product == null)
+                {
+                    throw new ProductNotFoundException("Product not found.");
+                }
+
+                await _productRepository.DeleteAsync(productId);
+
+                var productDto = _mapper.Map<GetProductDto>(product);
+                await _eventBus.PublishMessageAsync(productDto, "productQueue", "PRODUCT_DELETED");
+
+                return productId.Value;
             }
-
-            var productId = ProductId.Create(request.ProductId);
-            var userId = ProductUserId.Create(request.UserId);
-
-            var product = await _productRepository.GetByIdAsync(productId, userId);
-            if (product == null)
+            catch (ArgumentNullException ex)
             {
-                throw new Exception("Product not found."); // Esta excepción debe existir
+               
+                throw;
             }
-
-            await _productRepository.DeleteAsync(productId);
-
-            var productDto = _mapper.Map<GetProductDto>(product);
-            await _eventBus.PublishMessageAsync(productDto, "productQueue", "PRODUCT_DELETED");
-
-            return productId.Value;
+            catch (ProductNotFoundException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                
+                throw new ApplicationException("Ocurrió un error inesperado al eliminar el producto.", ex);
+            }
         }
     }
 }

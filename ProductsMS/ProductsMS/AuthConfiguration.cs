@@ -1,10 +1,12 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ProductsMS
 {
+    [ExcludeFromCodeCoverage]
     public static class AuthConfiguration
     {
         public static IServiceCollection KeycloakConfiguration(
@@ -76,7 +78,7 @@ namespace ProductsMS
                             if (resourceAccessJson.RootElement.TryGetProperty("admin-client", out var webClientAccess))
                             {
                                 return webClientAccess.GetProperty("roles").EnumerateArray()
-                                    .Any(role => role.GetString() == "Auctioneer");
+                                    .Any(role => role.GetString() == "Bidder");
                             }
 
                             return false;
@@ -93,7 +95,7 @@ namespace ProductsMS
                             if (resourceAccessJson.RootElement.TryGetProperty("admin-client", out var webClientAccess))
                             {
                                 return webClientAccess.GetProperty("roles").EnumerateArray()
-                                    .Any(role => role.GetString() == "Bidder");
+                                    .Any(role => role.GetString() == "Auctioneer");
                             }
 
                             return false;

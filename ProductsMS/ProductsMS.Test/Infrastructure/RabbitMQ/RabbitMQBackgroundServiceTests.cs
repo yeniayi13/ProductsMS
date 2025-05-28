@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using ProductsMS.Infrastructure.RabbitMQ.Connection;
 using ProductsMS.Infrastructure.RabbitMQ.Consumer;
-
+using Xunit;
+using Moq;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using ProductsMS.Core.RabbitMQ;
 namespace ProductsMS.Test.Infrastructure.RabbitMQ
 {
-    using Xunit;
-    using Moq;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Hosting;
-    using ProductsMS.Core.RabbitMQ;
+  
 
     public class RabbitMQBackgroundServiceTests
     {

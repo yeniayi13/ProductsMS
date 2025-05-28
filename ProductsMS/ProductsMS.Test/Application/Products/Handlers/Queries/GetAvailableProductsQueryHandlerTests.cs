@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ProductsMS.Core.Repository;
 
 namespace ProductsMS.Test.Application.Products.Handlers.Queries
 {
@@ -23,13 +24,13 @@ namespace ProductsMS.Test.Application.Products.Handlers.Queries
 
     public class GetAvailableProductsQueryHandlerTests
     {
-        private readonly Mock<IProductRepository> _productRepositoryMock;
+        private readonly Mock<IProductRepositoryMongo> _productRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly GetAvailableProductsQueryHandler _handler;
 
         public GetAvailableProductsQueryHandlerTests()
         {
-            _productRepositoryMock = new Mock<IProductRepository>();
+            _productRepositoryMock = new Mock<IProductRepositoryMongo>();
             _mapperMock = new Mock<IMapper>();
             _handler = new GetAvailableProductsQueryHandler(
                 _productRepositoryMock.Object,

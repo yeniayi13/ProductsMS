@@ -38,20 +38,58 @@ namespace ProductsMS.Infrastructure.Services.Auction
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException($"Error al verificar si ese producto se encuentra en una subasta: {response.StatusCode}");
+                    throw new HttpRequestException($"Error al verificar si el producto está en una subasta: {response.StatusCode}");
                 }
 
                 await using var responseStream = await response.Content.ReadAsStreamAsync();
-                if (response.Content == null || string.IsNullOrWhiteSpace(await response.Content.ReadAsStringAsync()))
+
+                if (responseStream == null)
                 {
-                    throw new InvalidOperationException("El contenido de la respuesta es nulo o vacío.");
+                    throw new InvalidOperationException("El contenido de la respuesta es nulo.");
                 }
 
+                string responseContent = await response.Content.ReadAsStringAsync();
 
-                return true;
+                if (string.IsNullOrWhiteSpace(responseContent))
+                {
+                    throw new InvalidOperationException("El contenido de la respuesta es vacío o inválido.");
+                }
+
+                bool exists;
+                try
+                {
+                    exists = JsonSerializer.Deserialize<bool>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
+                catch (JsonException ex)
+                {
+                    throw new JsonException("Error al deserializar la respuesta JSON.", ex);
+                }
+
+                return exists;
             }
-            catch
+            catch (HttpRequestException ex)
             {
+                Console.Error.WriteLine($"Error de solicitud HTTP: {ex.Message}");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.Error.WriteLine($"Operación inválida: {ex.Message}");
+                throw;
+            }
+            catch (JsonException ex)
+            {
+                Console.Error.WriteLine($"Error de deserialización JSON: {ex.Message}");
+                throw;
+            }
+            catch (TaskCanceledException ex)
+            {
+                Console.Error.WriteLine($"La solicitud fue cancelada por tiempo de espera: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error inesperado: {ex.Message}");
                 throw;
             }
         }

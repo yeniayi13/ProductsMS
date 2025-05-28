@@ -9,6 +9,7 @@ using ProductsMS.Common.Enum;
 using ProductsMS.Common.Exceptions;
 using ProductsMS.Core.RabbitMQ;
 using ProductsMs.Core.Repository;
+using ProductsMS.Core.Repository;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 using ProductsMs.Domain.Entities.Products;
@@ -21,6 +22,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
     public class UpdateProductCommandHandlerTests
     {
         private readonly Mock<IProductRepository> _productRepositoryMock;
+        private readonly Mock<IProductRepositoryMongo> _productRepositoryMongoMock;
         private readonly Mock<IEventBus<UpdateProductDto>> _eventBusMock;
         private readonly UpdateProductCommandHandler _handler;
 
@@ -28,10 +30,10 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
         {
             _productRepositoryMock = new Mock<IProductRepository>();
             _eventBusMock = new Mock<IEventBus<UpdateProductDto>>();
-
+            _productRepositoryMongoMock = new Mock<IProductRepositoryMongo>();
             _handler = new UpdateProductCommandHandler(
                 _productRepositoryMock.Object,
-                _eventBusMock.Object);
+                _eventBusMock.Object, _productRepositoryMongoMock.Object);
         }
 
         [Fact]
@@ -60,7 +62,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
                 ProductUserId.Create(userId)
             );
 
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
+            _productRepositoryMongoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
                 .ReturnsAsync(oldProduct);
 
             _productRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<ProductEntity>()))
@@ -93,7 +95,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
                 ProductAvilability = "Disponible" // Valor válido
             }, userId);
 
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
+            _productRepositoryMongoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
                 .ReturnsAsync((ProductEntity)null);
 
             // Act & Assert
@@ -127,7 +129,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
             },userId);
 
             var oldProduct = new ProductEntity();
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
+            _productRepositoryMongoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
                 .ReturnsAsync(oldProduct);
 
             // Act & Assert

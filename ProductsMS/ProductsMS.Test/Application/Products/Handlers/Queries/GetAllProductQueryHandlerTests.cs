@@ -9,6 +9,7 @@ using ProductsMS.Application.Products.Queries;
 using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Common.Exceptions;
 using ProductsMs.Core.Repository;
+using ProductsMS.Core.Repository;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 using ProductsMs.Domain.Entities.Products;
 using Xunit;
@@ -18,13 +19,13 @@ namespace ProductsMS.Test.Application.Products.Handlers.Queries
     
     public class GetAllProductQueryHandlerTests
     {
-        private readonly Mock<IProductRepository> _productRepositoryMock;
+        private readonly Mock<IProductRepositoryMongo> _productRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly GetAllProductQueryHandler _handler;
 
         public GetAllProductQueryHandlerTests()
         {
-            _productRepositoryMock = new Mock<IProductRepository>();
+            _productRepositoryMock = new Mock<IProductRepositoryMongo>();
             _mapperMock = new Mock<IMapper>();
             _handler = new GetAllProductQueryHandler(
                 _productRepositoryMock.Object,

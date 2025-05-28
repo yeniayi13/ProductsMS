@@ -9,6 +9,7 @@ using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Enum;
 using ProductsMS.Common.Exceptions;
 using ProductsMS.Core.RabbitMQ;
+using ProductsMS.Core.Repository;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 
 namespace ProductsMS.Application.Products.Handlers.Commands
@@ -16,11 +17,13 @@ namespace ProductsMS.Application.Products.Handlers.Commands
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Guid>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IProductRepositoryMongo _productRepositoryMongo;
         private readonly IEventBus<UpdateProductDto> _eventBus;
-        public UpdateProductCommandHandler(IProductRepository productRepository, IEventBus<UpdateProductDto> eventBus)
+        public UpdateProductCommandHandler(IProductRepository productRepository, IEventBus<UpdateProductDto> eventBus, IProductRepositoryMongo productRepositoryMongo)
         {
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository)); //*Valido que estas inyecciones sean exitosas
             _eventBus = eventBus;
+            _productRepositoryMongo = productRepositoryMongo ?? throw new ArgumentNullException(nameof(productRepositoryMongo));
 
         }
 
@@ -38,16 +41,20 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                     throw new ArgumentNullException(nameof(request.Product), "Product cannot be null.");
                 }
 
-                var oldProduct = await _productRepository.GetByIdAsync(ProductId.Create(request.Id)!,ProductUserId.Create(request.UserId)!);
+                var oldProduct = await _productRepositoryMongo.GetByIdAsync(ProductId.Create(request.Id)!, ProductUserId.Create(request.UserId)!);
 
-                //Valido los datos de entrada
+                // Valido los datos de entrada
                 var validator = new UpdateProductEntityValidator();
                 var validationResult = await validator.ValidateAsync(request.Product, cancellationToken);
                 if (!validationResult.IsValid)
                 {
                     throw new FluentValidation.ValidationException(validationResult.Errors);
                 }
-                if (oldProduct == null) throw new ProductNotFoundException("Product not found");
+
+                if (oldProduct == null)
+                {
+                    throw new ProductNotFoundException("Product not found");
+                }
 
                 // Validación adicional en `ProductAvailability`
                 if (!Enum.TryParse<ProductAvilability>(request.Product.ProductAvilability.ToString(), out var productAvailability))
@@ -55,9 +62,9 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                     throw new ArgumentException("Invalid ProductAvailability value");
                 }
 
-                 //Crear el objeto actualizado con los cambios
+                // Crear el objeto actualizado con los cambios
                 var updatedProduct = ProductEntity.Update(
-                    oldProduct, // Se debe proporcionar la entidad base para la actualización
+                    oldProduct,
                     request.Product.ProductName != null ? ProductName.Create(request.Product.ProductName) : oldProduct.ProductName,
                     request.Product.ProductImage != null ? ProductImage.FromBase64(request.Product.ProductImage) : oldProduct.ProductImage,
                     request.Product.ProductPrice != null ? ProductPrice.Create(request.Product.ProductPrice) : oldProduct.ProductPrice,
@@ -66,7 +73,6 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                     request.Product.ProductStock != null ? ProductStock.Create(request.Product.ProductStock) : oldProduct.ProductStock,
                     request.Product.CategoryId != null ? CategoryId.Create(request.Product.CategoryId) : oldProduct.CategoryId,
                     request.Product.ProductUserId != null ? ProductUserId.Create(request.Product.ProductUserId) : oldProduct.ProductUserId
-
                 );
 
                 Console.WriteLine($"Actualizando producto: {oldProduct.ProductUserId}");
@@ -77,11 +83,31 @@ namespace ProductsMS.Application.Products.Handlers.Commands
 
                 return oldProduct.ProductId.Value;
             }
+            catch (ArgumentNullException ex)
+            {
+              
+                throw;
+            }
+            catch (FluentValidation.ValidationException ex)
+            {
+                
+                throw;
+            }
+            catch (ProductNotFoundException ex)
+            {
+                
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                
+                throw;
+            }
             catch (Exception ex)
             {
-                throw;
-
+                throw new ApplicationException("Ocurrió un error inesperado al actualizar el producto.", ex);
             }
         }
     }
+    
 }

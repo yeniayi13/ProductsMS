@@ -13,6 +13,8 @@ using ProductsMS.Core.RabbitMQ;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 using Xunit;
 using ProductsMs.Domain.Entities.Products;
+using ProductsMS.Core.Repository;
+using ProductsMS.Common.Exceptions;
 
 
 namespace ProductsMS.Test.Application.Products.Handlers.Commands
@@ -22,6 +24,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
     {
         private readonly Mock<IProductRepository> _productRepositoryMock;
         private readonly Mock<IEventBus<GetProductDto>> _eventBusMock;
+        private readonly Mock<IProductRepositoryMongo> _productRepositoryMongoMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly DeleteProductCommandHandler _handler;
 
@@ -30,8 +33,10 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
             _productRepositoryMock = new Mock<IProductRepository>();
             _eventBusMock = new Mock<IEventBus<GetProductDto>>();
             _mapperMock = new Mock<IMapper>();
+            _productRepositoryMongoMock = new Mock<IProductRepositoryMongo>();
 
             _handler = new DeleteProductCommandHandler(
+                _productRepositoryMongoMock.Object,
                 _productRepositoryMock.Object,
                 _eventBusMock.Object,
                 _mapperMock.Object);
@@ -46,7 +51,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
             var deleteCommand = new DeleteProductCommand(productId, userId);
 
             var product = new ProductEntity(); // Simulación del producto recuperado
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
+            _productRepositoryMongoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
                 .ReturnsAsync(product);
 
             _productRepositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<ProductId>()))
@@ -76,11 +81,11 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
             var userId = Guid.NewGuid();
             var deleteCommand = new DeleteProductCommand(productId, userId);
 
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
+            _productRepositoryMongoMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ProductId>(), It.IsAny<ProductUserId>()))
                 .ReturnsAsync((ProductEntity)null);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => _handler.Handle(deleteCommand, CancellationToken.None));
+            var exception = await Assert.ThrowsAsync<ProductNotFoundException>(() => _handler.Handle(deleteCommand, CancellationToken.None));
             Assert.Equal("Product not found.", exception.Message);
 
             _productRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<ProductId>()), Times.Never);

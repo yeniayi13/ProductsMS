@@ -8,7 +8,9 @@ using ProductsMs.Core.Repository;
 using ProductsMs.Infrastructure.Repositories;
 using ProductsMS.Application.Products.Handlers.Commands;
 using ProductsMS.Application.Products.Handlers.Queries;
+using ProductsMS.Core.Repository;
 using ProductsMS.Infrastructure.Database.Context.Postgres;
+using ProductsMS.Infrastructure.Repositories;
 using ProductsMS.Infrastructure.Services.User;
 
 namespace ProductosMs
@@ -26,6 +28,7 @@ namespace ProductosMs
             //* Sin los Scope no funciona!!
             //services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductRepositoryMongo, ProductRepositoryMongo>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ApplicationDbContext>();
             services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
