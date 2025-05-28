@@ -44,7 +44,6 @@ namespace ProductsMS.Infrastructure.Services.User
                     throw new InvalidOperationException("El contenido de la respuesta es nulo.");
                 }
 
-                // 🔹 Asegurar que `responseStream` contiene datos antes de deserializar
                 var user = await JsonSerializer.DeserializeAsync<GetUser>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                 if (user == null)
@@ -56,8 +55,24 @@ namespace ProductsMS.Infrastructure.Services.User
 
                 return user;
             }
-            catch
+            catch (HttpRequestException ex)
             {
+                Console.Error.WriteLine($"Error de solicitud HTTP: {ex.Message}");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.Error.WriteLine($"Operación inválida: {ex.Message}");
+                throw;
+            }
+            catch (JsonException ex)
+            {
+                Console.Error.WriteLine($"Error de deserialización JSON: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error inesperado: {ex.Message}");
                 throw;
             }
         }

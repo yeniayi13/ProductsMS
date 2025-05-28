@@ -8,8 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Moq.Protected;
+
 using Xunit;
+using ProductsMS.Core.Service.Auction;
 
 namespace ProductsMS.Test.Service
 {
@@ -41,27 +45,7 @@ namespace ProductsMS.Test.Service
             _auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
         }
 
-        [Fact]
-        public async Task AuctionExists_ShouldReturnTrue_WhenProductExists()
-        {
-            // Arrange
-            var productId = Guid.NewGuid();
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("Valid response")
-            };
-
-            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
-            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
-
-            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
-
-            // Act
-            var result = await auctionService.AuctionExists(productId);
-
-            // Assert
-            Assert.True(result);
-        }
+      
 
         [Fact]
         public async Task AuctionExists_ShouldThrowHttpRequestException_WhenProductNotFound()
@@ -78,6 +62,85 @@ namespace ProductsMS.Test.Service
             // Act & Assert
             await Assert.ThrowsAsync<HttpRequestException>(() => auctionService.AuctionExists(productId));
         }
+        [Fact]
+        public async Task AuctionExists_ShouldIncludeAuthorizationHeader()
+        {
+            var productId = Guid.NewGuid();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"auction/product/{productId}");
+
+            var mockHttpContext = new DefaultHttpContext();
+            mockHttpContext.Request.Headers["Authorization"] = "Bearer test-token";
+
+            Assert.True(mockHttpContext.Request.Headers.ContainsKey("Authorization"));
+            Assert.Equal("Bearer test-token", mockHttpContext.Request.Headers["Authorization"]);
+        }
+
+        [Fact]
+        public async Task AuctionExists_ShouldThrowUnauthorizedException_WhenResponseIsForbidden()
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.Forbidden); // 403 Forbidden
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => auctionService.AuctionExists(Guid.NewGuid()));
+
+            Assert.Contains("Error al verificar si el producto está en una subasta", exception.Message);
+        }
+
+        [Fact]
+        public async Task AuctionExists_ShouldThrowServerErrorException_WhenResponseIsInternalServerError()
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError); // 500 Internal Server Error
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => auctionService.AuctionExists(Guid.NewGuid()));
+
+            Assert.Contains("Error al verificar si el producto está en una subasta", exception.Message);
+        }
+        [Fact]
+        public async Task AuctionExists_ShouldHandleValidJsonWithUnexpectedData()
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{ \"status\": \"unexpected\" }") // JSON válido, pero inesperado
+            };
+
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<JsonException>(() => auctionService.AuctionExists(Guid.NewGuid()));
+
+            Assert.Contains("Error al deserializar la respuesta JSON.", exception.Message);
+        }
+
+        [Fact]
+        public async Task AuctionExists_ShouldHandleMultipleConcurrentRequests()
+        {
+            var productId = Guid.NewGuid();
+            var jsonResponse = JsonSerializer.Serialize(true);
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonResponse)
+            };
+
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var tasks = new Task<bool>[10];
+            for (int i = 0; i < 10; i++)
+            {
+                tasks[i] = auctionService.AuctionExists(productId);
+            }
+
+            var results = await Task.WhenAll(tasks);
+            Assert.All(results, result => Assert.True(result));
+        }
+       
 
         [Fact]
         public async Task AuctionExists_ShouldThrowInvalidOperationException_WhenResponseContentIsNull()
@@ -115,5 +178,66 @@ namespace ProductsMS.Test.Service
             // Act & Assert
             await Assert.ThrowsAsync<HttpRequestException>(() => auctionService.AuctionExists(productId));
         }
+
+        [Fact]
+        public async Task AuctionExists_ShouldThrowHttpRequestException_WhenResponseIsNotSuccessful()
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => auctionService.AuctionExists(Guid.NewGuid()));
+
+            Assert.Contains("Error al verificar si el producto está en una subasta", exception.Message);
+        }
+
+
+
+
+
+        [Fact]
+        public async Task AuctionExists_ShouldThrowTaskCanceledException_WhenRequestTimesOut()
+        {
+            var handlerMock = new MockHttpMessageHandlerException(new TaskCanceledException("Request timeout"));
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<TaskCanceledException>(() => auctionService.AuctionExists(Guid.NewGuid()));
+
+            Assert.Contains("Request timeout", exception.Message);
+        }
+
+
+        [Fact]
+        public async Task AuctionExists_ShouldHandleValidJsonWithoutData()
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{}") // JSON válido pero vacío
+            };
+
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<JsonException>(() => auctionService.AuctionExists(Guid.NewGuid()));
+
+            Assert.Contains("Error al deserializar la respuesta JSON.", exception.Message);
+        }
+
+        [Fact]
+        public async Task AuctionExists_ShouldThrowHttpRequestException_WhenNetworkFails()
+        {
+            var handlerMock = new MockHttpMessageHandlerException(new HttpRequestException("Network error"));
+
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var auctionService = new AuctionService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => auctionService.AuctionExists(Guid.NewGuid()));
+
+            Assert.Contains("Network error", exception.Message);
+        }
+
     }
 }

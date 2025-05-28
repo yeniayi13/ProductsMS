@@ -16,6 +16,7 @@ using ProductsMs.Domain.Entities.Products;
 using AutoMapper;
 using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Core.Service.User;
+using ProductsMS.Common.Exceptions;
 
 namespace ProductsMS.Test.Application.Products.Handlers.Commands
 {
@@ -150,7 +151,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
 
             // Act & Assert
             var exception =
-                await Assert.ThrowsAsync<NullReferenceException>(() => _handler.Handle(createCommand, CancellationToken.None));
+                await Assert.ThrowsAsync<CategoryNotFoundException>(() => _handler.Handle(createCommand, CancellationToken.None));
             Assert.Contains("The specified category does not exist.",
                 exception.Message);
         }
@@ -175,7 +176,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
 
             // Act & Assert
             var exception =
-                await Assert.ThrowsAsync<NullReferenceException>(() => _handler.Handle(createCommand, CancellationToken.None));
+                await Assert.ThrowsAsync<CategoryNotFoundException>(() => _handler.Handle(createCommand, CancellationToken.None));
             Assert.Contains("The specified category does not exist.", exception.Message);
         }
 

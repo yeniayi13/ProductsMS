@@ -10,13 +10,8 @@ namespace ProductsMs.Core.Repository
 {
     public interface IProductRepository
     {
-        Task<ProductEntity?> GetByIdAsync(ProductId id, ProductUserId userId);
-        Task<ProductEntity?> GetByNameAsync(ProductName name, ProductUserId userId);
-        Task<List<ProductEntity?>> GetAvailableProductsAsync(ProductUserId userId, CategoryId? categoryId = null, decimal? minPrice = null, decimal? maxPrice = null);
-
         Task AddAsync(ProductEntity product);
         Task DeleteAsync(ProductId id);
-        Task<List<ProductEntity>> GetAllAsync(ProductUserId userId);
         Task<ProductEntity?> UpdateAsync(ProductEntity product);
     }
 }

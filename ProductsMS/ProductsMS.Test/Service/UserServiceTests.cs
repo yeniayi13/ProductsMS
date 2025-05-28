@@ -13,6 +13,8 @@ using ProductsMs.Infrastructure;
 using ProductsMS.Common.Dtos.Product.Response;
 using System.Text.Json;
 using ProductsMS.Infrastructure.Services.Auction;
+using Moq.Protected;
+using ProductsMS.Core.Service.Auction;
 namespace ProductsMS.Test.Service
 
 {
@@ -190,5 +192,67 @@ namespace ProductsMS.Test.Service
 
             Assert.Contains("Network error", exception.Message);
         }
+
+    
+
+        [Fact]
+        public async Task AuctioneerExists_ShouldIncludeAuthorizationHeader()
+        {
+            var userId = Guid.NewGuid();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"user/auctioneer/{userId}");
+
+            var mockHttpContext = new DefaultHttpContext();
+            mockHttpContext.Request.Headers["Authorization"] = "Bearer test-token";
+
+            Assert.True(mockHttpContext.Request.Headers.ContainsKey("Authorization"));
+            Assert.Equal("Bearer test-token", mockHttpContext.Request.Headers["Authorization"]);
+        }
+      
+        [Fact]
+        public async Task AuctioneerExists_ShouldHandleSlowResponse()
+        {
+            var userId = Guid.NewGuid();
+            var expectedUser = new GetUser { UserId = userId, UserName = "Test User" };
+            var jsonResponse = JsonSerializer.Serialize(expectedUser);
+
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonResponse)
+            };
+
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true); // Simula una respuesta lenta
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var userService = new UserService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var result = await userService.AuctioneerExists(userId);
+
+            Assert.NotNull(result);
+            Assert.Equal(expectedUser.UserId, result.UserId);
+        }
+        [Fact]
+        public async Task AuctioneerExists_ShouldThrowRedirectException_WhenResponseIsRedirect()
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.Found); // 302 Redirect
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var userService = new UserService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => userService.AuctioneerExists(Guid.NewGuid()));
+
+            Assert.Contains("Error al obtener usuario: Found", exception.Message);
+        }
+        [Fact]
+        public async Task AuctioneerExists_ShouldThrowRateLimitException_WhenTooManyRequests()
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.TooManyRequests); // 429 Too Many Requests
+            var handlerMock = new MockHttpMessageHandler(responseMessage, true);
+            var httpClient = new HttpClient(handlerMock) { BaseAddress = new Uri("https://example.com") };
+            var userService = new UserService(httpClient, _mockHttpContextAccessor.Object, _mockHttpClientUrl.Object);
+
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => userService.AuctioneerExists(Guid.NewGuid()));
+
+            Assert.Contains("Error al obtener usuario: TooManyRequests", exception.Message);
+        }
+
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.OpenApi.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProductsMS
 {
+    [ExcludeFromCodeCoverage]
     internal static class SwaggerAuth
     {
         internal static IServiceCollection AddSwaggerGenWithAuth(

@@ -10,10 +10,11 @@ using ProductsMS.Application.Products.Validator.Products;
 using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Common.Enum;
+using ProductsMS.Common.Exceptions;
 using ProductsMS.Core.RabbitMQ;
 using ProductsMS.Core.Service.User;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
-
+using ProductsMS.Infrastructure.Exceptions;
 
 
 namespace ProductsMS.Application.Products.Handlers.Commands
@@ -50,13 +51,13 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                 var category = await _categoryRepository.GetByIdAsync(CategoryId.Create(request.Product.CategoryId));
                 if (category == null)
                 {
-                    throw new NullReferenceException("The specified category does not exist.");
+                    throw new CategoryNotFoundException("The specified category does not exist.");
                 }
 
                 var user = await _userService.AuctioneerExists(request.UserId);
 
                 
-                if (user == null) throw new NullReferenceException($"user with id {request.UserId} not found");
+                if (user == null) throw new UserNotFoundException($"user with id {request.UserId} not found");
 
                 // Crear la entidad Producto
                 var product = new ProductEntity(
@@ -78,6 +79,21 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                 await _eventBus.PublishMessageAsync(productDto, "productQueue", "PRODUCT_CREATED");
                 // Retornar el ID del producto registrado
                 return product.ProductId.Value;
+            }
+            catch (ValidationException ex)
+            {
+                throw;
+
+            }
+            catch (UserNotFoundException ex)
+            {
+                throw;
+
+            }
+            catch (CategoryNotFoundException ex)
+            {
+                throw;
+
             }
             catch (Exception ex)
             {

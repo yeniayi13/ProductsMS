@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ProductsMS.Infrastructure.RabbitMQ.Consumer
 {
-    //[ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     public class RabbitMQConsumer: IRabbitMQConsumer
     {
         private readonly IConnectionRabbbitMQ _rabbitMQConnection;

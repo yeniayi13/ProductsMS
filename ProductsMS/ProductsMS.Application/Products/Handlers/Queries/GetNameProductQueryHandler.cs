@@ -13,15 +13,16 @@ using ProductsMS.Application.Products.Queries;
 using ProductsMS.Common.Dtos.Product.Response;
 using AutoMapper;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
+using ProductsMS.Core.Repository;
 
 namespace ProductsMS.Application.Products.Handlers.Queries
 {
     public class GetNameProductQueryHandler : IRequestHandler<GetNameProductQuery, GetProductDto>
     {
-        public IProductRepository _productRepository;
+        public IProductRepositoryMongo _productRepository;
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper; // Agregar el Mapper
-        public GetNameProductQueryHandler(IProductRepository productRepository, IApplicationDbContext dbContext, IMapper mapper)
+        public GetNameProductQueryHandler(IProductRepositoryMongo productRepository, IApplicationDbContext dbContext, IMapper mapper)
         {
             _productRepository = productRepository;
             _dbContext = dbContext;

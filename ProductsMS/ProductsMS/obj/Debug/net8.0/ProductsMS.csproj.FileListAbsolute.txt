@@ -60,7 +60,6 @@ C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\staticwebasset
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.ProductsMS.props
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.ProductsMS.props
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\staticwebassets.pack.json
-C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\ProductsMS.csproj.Up2Date
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\ProductsMS.dll
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\refint\ProductsMS.dll
@@ -88,3 +87,4 @@ C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\bin\Debug\net8.0\Microsoft.Iden
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\LENOVO\ProductsMS\ProductsMS\ProductsMS\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

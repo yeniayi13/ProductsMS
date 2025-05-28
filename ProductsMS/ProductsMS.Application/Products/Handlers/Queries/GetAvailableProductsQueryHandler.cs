@@ -15,15 +15,16 @@ using AutoMapper;
 using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 using ProductsMs.Domain.Entities.Category.ValueObject;
+using ProductsMS.Core.Repository;
 
 namespace ProductsMS.Application.Products.Handlers.Queries
 {
     public class GetAvailableProductsQueryHandler : IRequestHandler<GetAvailableProductsQuery, List<GetProductDto>>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProductRepositoryMongo _productRepository;
         private readonly IMapper _mapper;
 
-        public GetAvailableProductsQueryHandler(IProductRepository productRepository, IMapper mapper)
+        public GetAvailableProductsQueryHandler(IProductRepositoryMongo productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
             _mapper = mapper;

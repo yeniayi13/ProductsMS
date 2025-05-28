@@ -9,6 +9,7 @@ using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Common.Exceptions;
 using ProductsMs.Core.Database;
 using ProductsMs.Core.Repository;
+using ProductsMS.Core.Repository;
 using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 using ProductsMs.Domain.Entities.Products;
@@ -19,14 +20,14 @@ namespace ProductsMS.Test.Application.Products.Handlers.Queries
     
     public class GetProductQueryHandlerTests
     {
-        private readonly Mock<IProductRepository> _productRepositoryMock;
+        private readonly Mock<IProductRepositoryMongo> _productRepositoryMock;
         private readonly Mock<IApplicationDbContext> _dbContextMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly GetProductQueryHandler _handler;
 
         public GetProductQueryHandlerTests()
         {
-            _productRepositoryMock = new Mock<IProductRepository>();
+            _productRepositoryMock = new Mock<IProductRepositoryMongo>();
             _dbContextMock = new Mock<IApplicationDbContext>();
             _mapperMock = new Mock<IMapper>();
 
