@@ -223,7 +223,7 @@ namespace ProductosMs.Controllers
             }
         }
         [Authorize(Policy = "SubastadorPolicy")]
-        [Authorize(Policy = "PostorPolicy")]
+        //[Authorize(Policy = "PostorPolicy")]
         [HttpGet("Name/Product/{name}")]
         public async Task<IActionResult> GetAllNameProducts([FromRoute] string name, [FromQuery] Guid userId)
         {
@@ -288,7 +288,7 @@ namespace ProductosMs.Controllers
         }
 
         [Authorize(Policy = "SubastadorPolicy")]
-        [Authorize(Policy = "PostorPolicy")]
+        //[Authorize(Policy = "PostorPolicy")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct([FromRoute] Guid id, [FromQuery] Guid userId)
         {

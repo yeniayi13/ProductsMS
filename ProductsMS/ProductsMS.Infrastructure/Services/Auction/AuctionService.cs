@@ -13,84 +13,56 @@ using ProductsMS.Core.Service.Auction;
 
 namespace ProductsMS.Infrastructure.Services.Auction
 {
-    public class AuctionService: IAuctionService
+    public class AuctionService : IAuctionService
     {
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _httpClientUrl;
-        public AuctionService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IOptions<HttpClientUrl> httpClientUrl)
+
+        public AuctionService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor,
+            IOptions<HttpClientUrl> httpClientUrl)
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
             _httpClientUrl = httpClientUrl.Value.ApiUrl;
 
             //* Configuracion del HttpClient
-            var headerToken = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
-            _httpClient.BaseAddress = new Uri("http://localhost:18084/");
+            var headerToken = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString()
+                ?.Replace("Bearer ", "");
+            _httpClient.BaseAddress = new Uri("http://localhost:18085/");
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {headerToken}");
         }
 
-        public async Task<bool> AuctionExists(Guid productId)
+        public async Task<bool> AuctionExists(Guid productId, Guid userId)
         {
             try
             {
-                var response = await _httpClient.GetAsync($"auction/product/{productId}");
+                var response = await _httpClient.GetAsync($"auction/producto-activo/{productId}?userId={userId}");
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException($"Error al verificar si el producto está en una subasta: {response.StatusCode}");
+                    throw new HttpRequestException(
+                        $"Error obteniendo la información de la subasta: {response.StatusCode}");
                 }
 
-                await using var responseStream = await response.Content.ReadAsStreamAsync();
-
-                if (responseStream == null)
-                {
-                    throw new InvalidOperationException("El contenido de la respuesta es nulo.");
-                }
-
-                string responseContent = await response.Content.ReadAsStringAsync();
-
+                // Leer el contenido y validar si es vacío o nulo
+                var responseContent = await response.Content.ReadAsStringAsync();
                 if (string.IsNullOrWhiteSpace(responseContent))
                 {
-                    throw new InvalidOperationException("El contenido de la respuesta es vacío o inválido.");
+                    return false;
                 }
 
-                bool exists;
-                try
-                {
-                    exists = JsonSerializer.Deserialize<bool>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }
-                catch (JsonException ex)
-                {
-                    throw new JsonException("Error al deserializar la respuesta JSON.", ex);
-                }
-
-                return exists;
+                return true;
             }
             catch (HttpRequestException ex)
             {
                 Console.Error.WriteLine($"Error de solicitud HTTP: {ex.Message}");
-                throw;
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.Error.WriteLine($"Operación inválida: {ex.Message}");
-                throw;
-            }
-            catch (JsonException ex)
-            {
-                Console.Error.WriteLine($"Error de deserialización JSON: {ex.Message}");
-                throw;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Console.Error.WriteLine($"La solicitud fue cancelada por tiempo de espera: {ex.Message}");
-                throw;
+                throw; // 🔹 Lanza la excepción en lugar de retornar `false`
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"Error inesperado: {ex.Message}");
-                throw;
+                throw; // 🔹 Lanza la excepción en lugar de retornar `false`
             }
         }
     }

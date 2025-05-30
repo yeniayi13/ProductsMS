@@ -117,6 +117,7 @@ namespace ProductsMS
 
                             return false;
                         }));
+
             });
 
             // Agregar IHttpContextAccessor (necesario para acceder al contexto HTTP)

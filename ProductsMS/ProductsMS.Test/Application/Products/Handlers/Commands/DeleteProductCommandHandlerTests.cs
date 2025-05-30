@@ -15,6 +15,7 @@ using Xunit;
 using ProductsMs.Domain.Entities.Products;
 using ProductsMS.Core.Repository;
 using ProductsMS.Common.Exceptions;
+using ProductsMS.Core.Service.Auction;
 
 
 namespace ProductsMS.Test.Application.Products.Handlers.Commands
@@ -26,6 +27,7 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
         private readonly Mock<IEventBus<GetProductDto>> _eventBusMock;
         private readonly Mock<IProductRepositoryMongo> _productRepositoryMongoMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IAuctionService> _auctionServiceMock;
         private readonly DeleteProductCommandHandler _handler;
 
         public DeleteProductCommandHandlerTests()
@@ -34,12 +36,13 @@ namespace ProductsMS.Test.Application.Products.Handlers.Commands
             _eventBusMock = new Mock<IEventBus<GetProductDto>>();
             _mapperMock = new Mock<IMapper>();
             _productRepositoryMongoMock = new Mock<IProductRepositoryMongo>();
+            _auctionServiceMock = new Mock<IAuctionService>();
 
             _handler = new DeleteProductCommandHandler(
                 _productRepositoryMongoMock.Object,
                 _productRepositoryMock.Object,
                 _eventBusMock.Object,
-                _mapperMock.Object);
+                _mapperMock.Object,_auctionServiceMock.Object);
         }
 
         [Fact]
