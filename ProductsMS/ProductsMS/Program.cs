@@ -18,9 +18,11 @@ using ProductsMS.Infrastructure.RabbitMQ;
 using ProductsMS.Common.Dtos.Category.Response;
 using ProductsMS.Common.Dtos.Product.Request;
 using ProductsMS.Common.Dtos.Product.Response;
+using ProductsMS.Core.Service.Auction;
 using ProductsMs.Domain.Entities.Category;
 using ProductsMs.Domain.Entities.Products;
 using ProductsMS.Core.Service.User;
+using ProductsMS.Infrastructure.Services.Auction;
 using ProductsMS.Infrastructure.Services.User;
 using RabbitMQ.Client;
 
@@ -158,6 +160,8 @@ builder.Services.Configure<HttpClientUrl>(
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IUserService, UserService>();
+builder.Services.AddHttpClient<IAuctionService, AuctionService>();
+
 
 //Configurar Firebase Storage Settings desde appsettings.json
 

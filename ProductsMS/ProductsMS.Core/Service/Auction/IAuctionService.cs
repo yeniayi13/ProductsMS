@@ -9,6 +9,6 @@ namespace ProductsMS.Core.Service.Auction
 {
     public interface IAuctionService
     {
-        Task<bool> AuctionExists(Guid productId);
+        Task<bool> AuctionExists(Guid productId, Guid userId);
     }
 }

@@ -7,7 +7,9 @@ using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Common.Exceptions;
 using ProductsMS.Core.RabbitMQ;
 using ProductsMS.Core.Repository;
+using ProductsMS.Core.Service.Auction;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
+using ProductsMS.Infrastructure.Exceptions;
 
 namespace ProductsMS.Application.Products.Handlers.Commands
 {
@@ -15,15 +17,17 @@ namespace ProductsMS.Application.Products.Handlers.Commands
     {
         private readonly IProductRepository _productRepository;
         private readonly IProductRepositoryMongo _productRepositoryMongo;
+        private readonly IAuctionService _auctionService;
         private readonly IEventBus<GetProductDto> _eventBus;
         private readonly IMapper _mapper;
 
-        public DeleteProductCommandHandler(IProductRepositoryMongo productRepositoryMongo,IProductRepository productRepository, IEventBus<GetProductDto> eventBus, IMapper mapper)
+        public DeleteProductCommandHandler(IProductRepositoryMongo productRepositoryMongo,IProductRepository productRepository, IEventBus<GetProductDto> eventBus, IMapper mapper, IAuctionService auctionService)
         {
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository)); //*Valido que estas inyecciones sean exitosas
             _eventBus = eventBus;
             _mapper = mapper;//*Valido que estas inyecciones sean exitosas
             _productRepositoryMongo = productRepositoryMongo;
+            _auctionService = auctionService ?? throw new ArgumentNullException(nameof(auctionService));
         }
 
         public async Task<Guid> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -43,6 +47,10 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                 {
                     throw new ProductNotFoundException("Product not found.");
                 }
+                if (await _auctionService.AuctionExists(productId.Value, userId.Value))
+                {
+                    throw new ProductInAuctionException("No se puede eliminar un producto mientras está en una subasta ");
+                }
 
                 await _productRepository.DeleteAsync(productId);
 
@@ -57,6 +65,10 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                 throw;
             }
             catch (ProductNotFoundException ex)
+            {
+                throw;
+            }
+            catch (ProductInAuctionException ex)
             {
                 throw;
             }

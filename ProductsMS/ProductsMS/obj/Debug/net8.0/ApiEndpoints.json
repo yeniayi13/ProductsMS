@@ -61,22 +61,6 @@
   },
   {
     "ContainingType": "ProductosMs.Controllers.ProductController",
-    "Method": "GetAllProducts",
-    "RelativePath": "auctioneer/product",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "userId",
-        "Type": "System.Guid",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ProductosMs.Controllers.ProductController",
     "Method": "GetProduct",
     "RelativePath": "auctioneer/product/{id}",
     "HttpMethod": "GET",
@@ -98,55 +82,8 @@
   },
   {
     "ContainingType": "ProductosMs.Controllers.ProductController",
-    "Method": "UpdateProduct",
-    "RelativePath": "auctioneer/product/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "updateProductDto",
-        "Type": "ProductsMS.Common.Dtos.Product.Request.UpdateProductDto",
-        "IsRequired": true
-      },
-      {
-        "Name": "userId",
-        "Type": "System.Guid",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ProductosMs.Controllers.ProductController",
-    "Method": "DeleteProduct",
-    "RelativePath": "auctioneer/product/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "userId",
-        "Type": "System.Guid",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "ProductosMs.Controllers.ProductController",
     "Method": "CreatedProduct",
-    "RelativePath": "auctioneer/product/addProduct/{userId}",
+    "RelativePath": "auctioneer/product/Add-Product/{userId}",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -166,8 +103,66 @@
   },
   {
     "ContainingType": "ProductosMs.Controllers.ProductController",
+    "Method": "DeleteProduct",
+    "RelativePath": "auctioneer/product/Delete-Product/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ProductosMs.Controllers.ProductController",
+    "Method": "GetAllNameProducts",
+    "RelativePath": "auctioneer/product/Name/Product/{name}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "name",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ProductosMs.Controllers.ProductController",
+    "Method": "GetAllProducts",
+    "RelativePath": "auctioneer/product/Product-All",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ProductosMs.Controllers.ProductController",
     "Method": "GetAvailableProducts",
-    "RelativePath": "auctioneer/product/available",
+    "RelativePath": "auctioneer/product/Product-Available",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -197,15 +192,20 @@
   },
   {
     "ContainingType": "ProductosMs.Controllers.ProductController",
-    "Method": "GetAllNameProducts",
-    "RelativePath": "auctioneer/product/name/product/{name}",
-    "HttpMethod": "GET",
+    "Method": "UpdateProduct",
+    "RelativePath": "auctioneer/product/Update-Product/{id}",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "name",
-        "Type": "System.String",
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "updateProductDto",
+        "Type": "ProductsMS.Common.Dtos.Product.Request.UpdateProductDto",
         "IsRequired": true
       },
       {
