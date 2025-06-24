@@ -28,6 +28,19 @@ namespace ProductsMS.Infrastructure.Database.Configuration.Postgres
                                 .HasConversion(categoryName => categoryName.Value, value => CategoryName.Create(value)!)
                                 .IsRequired();
 
+                        // Seed data
+                        builder.HasData(
+                            new CategoryEntity
+                            {
+                                CategoryId = CategoryId.Create(new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479")),
+                                CategoryName = CategoryName.Create("Electronics"),
+                                CreatedAt = DateTime.UtcNow,
+                                CreatedBy = "seed",
+                                UpdatedAt = DateTime.UtcNow,
+                                UpdatedBy = "seed",
+                                IsDeleted = false
+                            }
+                        );
                 }
         }
 }
