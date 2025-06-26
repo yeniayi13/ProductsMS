@@ -47,7 +47,7 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                 {
                     throw new ProductNotFoundException("Product not found.");
                 }
-                if (await _auctionService.AuctionExists(productId.Value, userId.Value))
+                if (await _auctionService.AuctionExists(productId.Value,userId.Value))
                 {
                     throw new ProductInAuctionException("No se puede eliminar un producto mientras está en una subasta ");
                 }

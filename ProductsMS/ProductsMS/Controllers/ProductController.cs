@@ -89,7 +89,7 @@ namespace ProductosMs.Controllers
             catch (Exception e)
             {
                 _logger.LogError("Error inesperado: {Message}", e.Message);
-                return StatusCode(500, "Ocurrió un error inesperado al intentar crear el producto.");
+                return StatusCode(500, $"Ocurrió un error inesperado al intentar crear el producto,  {e.Message}");
             }
         }
 
@@ -157,7 +157,7 @@ namespace ProductosMs.Controllers
             catch (Exception e)
             {
                 _logger.LogError("Error inesperado: {Message}", e.Message);
-                return StatusCode(500, "Ocurrió un error inesperado al intentar obtener los productos.");
+                return StatusCode(500, $"Ocurrió un error inesperado al intentar obtener los productos, {e.Message}");
             }
         }
 
@@ -219,7 +219,7 @@ namespace ProductosMs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error inesperado en GetAvailableProducts: {Message}", ex.Message);
-                return StatusCode(500, "Ocurrió un error inesperado al obtener los productos.");
+                return StatusCode(500, $"Ocurrió un error inesperado al obtener los productos, {e.Message}");
             }
         }
         [Authorize(Policy = "SubastadorPolicy")]
@@ -283,7 +283,7 @@ namespace ProductosMs.Controllers
             catch (Exception e)
             {
                 _logger.LogError("Ocurrió un error inesperado al buscar el producto: {Message}", e.Message);
-                return StatusCode(500, "Ocurrió un error inesperado al intentar buscar el producto.");
+                return StatusCode(500, $"Ocurrió un error inesperado al intentar buscar el producto, {e.Message}");
             }
         }
 
@@ -357,7 +357,7 @@ namespace ProductosMs.Controllers
             catch (Exception e)
             {
                 _logger.LogError("Error inesperado: {Message}", e.Message);
-                return StatusCode(500, "Ocurrió un error inesperado al intentar obtener el producto.");
+                return StatusCode(500, $"Ocurrió un error inesperado al intentar obtener el producto, {e.Message}");
             }
         }
 
@@ -449,7 +449,7 @@ namespace ProductosMs.Controllers
             catch (Exception e)
             {
                 _logger.LogError("Error inesperado: {Message}", e.Message);
-                return StatusCode(500, "Ocurrió un error inesperado al actualizar el producto.");
+                return StatusCode(500, $"Ocurrió un error inesperado al actualizar el producto,  {e.Message}");
             }
         }
 
@@ -528,7 +528,7 @@ namespace ProductosMs.Controllers
             catch (Exception e)
             {
                 _logger.LogError("Error inesperado: {Message}", e.Message);
-                return StatusCode(500, "Ocurrió un error inesperado al intentar eliminar el producto.");
+                return StatusCode(500, $"Ocurrió un error inesperado al intentar eliminar el producto, {e.Message} ");
             }
         }
 
