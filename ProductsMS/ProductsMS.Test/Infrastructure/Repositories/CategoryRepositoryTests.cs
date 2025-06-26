@@ -14,16 +14,6 @@ using ProductsMS.Common.Dtos.Category.Response;
 using ProductsMs.Domain.Entities.Category.ValueObject;
 using ProductsMs.Domain.Entities.Category;
 using ProductsMs.Infrastructure.Repositories;
-
-using Xunit;
-using Moq;
-using MongoDB.Driver;
-using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using ProductsMs.Core.Repository;
-
 namespace ProductsMS.Test.Infrastructure.Repositories
 {
 
