@@ -219,7 +219,7 @@ namespace ProductosMs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error inesperado en GetAvailableProducts: {Message}", ex.Message);
-                return StatusCode(500, $"Ocurrió un error inesperado al obtener los productos, {e.Message}");
+                return StatusCode(500, $"Ocurrió un error inesperado al obtener los productos, {ex.Message}");
             }
         }
         [Authorize(Policy = "SubastadorPolicy")]
