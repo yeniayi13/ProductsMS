@@ -25,6 +25,8 @@ using ProductsMS.Core.Service.User;
 using ProductsMS.Infrastructure.Services.Auction;
 using ProductsMS.Infrastructure.Services.User;
 using RabbitMQ.Client;
+using ProductsMS.Infrastructure.Services.History;
+using ProductsMS.Core.Service.History;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -161,6 +163,7 @@ builder.Services.Configure<HttpClientUrl>(
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IUserService, UserService>();
 builder.Services.AddHttpClient<IAuctionService, AuctionService>();
+builder.Services.AddHttpClient<IHistoryService, HistoryService>();
 
 
 //Configurar Firebase Storage Settings desde appsettings.json

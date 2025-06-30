@@ -8,6 +8,7 @@ using ProductsMS.Common.Exceptions;
 using ProductsMS.Core.RabbitMQ;
 using ProductsMS.Core.Repository;
 using ProductsMS.Core.Service.Auction;
+using ProductsMS.Core.Service.History;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Infrastructure.Exceptions;
 
@@ -20,14 +21,16 @@ namespace ProductsMS.Application.Products.Handlers.Commands
         private readonly IAuctionService _auctionService;
         private readonly IEventBus<GetProductDto> _eventBus;
         private readonly IMapper _mapper;
+        private readonly IHistoryService _historyService;
 
-        public DeleteProductCommandHandler(IProductRepositoryMongo productRepositoryMongo,IProductRepository productRepository, IEventBus<GetProductDto> eventBus, IMapper mapper, IAuctionService auctionService)
+        public DeleteProductCommandHandler(IProductRepositoryMongo productRepositoryMongo,IProductRepository productRepository, IEventBus<GetProductDto> eventBus, IMapper mapper, IAuctionService auctionService, IHistoryService historyService)
         {
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository)); //*Valido que estas inyecciones sean exitosas
             _eventBus = eventBus;
             _mapper = mapper;//*Valido que estas inyecciones sean exitosas
             _productRepositoryMongo = productRepositoryMongo;
             _auctionService = auctionService ?? throw new ArgumentNullException(nameof(auctionService));
+            _historyService = historyService ?? throw new ArgumentNullException(nameof(historyService));
         }
 
         public async Task<Guid> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -56,6 +59,16 @@ namespace ProductsMS.Application.Products.Handlers.Commands
 
                 var productDto = _mapper.Map<GetProductDto>(product);
                 await _eventBus.PublishMessageAsync(productDto, "productQueue", "PRODUCT_DELETED");
+
+                // Registrar la actividad en el historial
+                var history = new GetHistoryDto
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId.Value,
+                    Action = $"Eliminastes el Producto con el nombre de :{product.ProductName.Value} ",
+                    Timestamp = DateTime.UtcNow
+                };
+                await _historyService.AddActivityHistoryAsync(history);
 
                 return productId.Value;
             }
