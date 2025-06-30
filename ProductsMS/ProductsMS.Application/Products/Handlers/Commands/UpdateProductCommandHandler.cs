@@ -6,10 +6,12 @@ using ProductsMs.Domain.Entities.Products.ValueObjects;
 using ProductsMS.Application.Products.Commands;
 using ProductsMS.Application.Products.Validator.Products;
 using ProductsMS.Common.Dtos.Product.Request;
+using ProductsMS.Common.Dtos.Product.Response;
 using ProductsMS.Common.Enum;
 using ProductsMS.Common.Exceptions;
 using ProductsMS.Core.RabbitMQ;
 using ProductsMS.Core.Repository;
+using ProductsMS.Core.Service.History;
 using ProductsMS.Domain.Entities.Products.ValueObjects;
 
 namespace ProductsMS.Application.Products.Handlers.Commands
@@ -19,11 +21,13 @@ namespace ProductsMS.Application.Products.Handlers.Commands
         private readonly IProductRepository _productRepository;
         private readonly IProductRepositoryMongo _productRepositoryMongo;
         private readonly IEventBus<UpdateProductDto> _eventBus;
-        public UpdateProductCommandHandler(IProductRepository productRepository, IEventBus<UpdateProductDto> eventBus, IProductRepositoryMongo productRepositoryMongo)
+        private readonly IHistoryService _historyService;
+        public UpdateProductCommandHandler(IProductRepository productRepository, IEventBus<UpdateProductDto> eventBus, IProductRepositoryMongo productRepositoryMongo, IHistoryService historyService)
         {
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository)); //*Valido que estas inyecciones sean exitosas
             _eventBus = eventBus;
             _productRepositoryMongo = productRepositoryMongo ?? throw new ArgumentNullException(nameof(productRepositoryMongo));
+            _historyService = historyService ?? throw new ArgumentNullException(nameof(historyService));
 
         }
 
@@ -80,6 +84,16 @@ namespace ProductsMS.Application.Products.Handlers.Commands
                 // Actualizar el producto en el repositorio
                 await _productRepository.UpdateAsync(oldProduct);
                 await _eventBus.PublishMessageAsync(request.Product, "productQueue", "PRODUCT_UPDATED");
+
+                // Registrar la actividad en el historial
+                var history = new GetHistoryDto
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = request.UserId,
+                    Action = $"Actualizaste el Producto con el nombre de :{oldProduct.ProductName.Value} ",
+                    Timestamp = DateTime.UtcNow
+                };
+                await _historyService.AddActivityHistoryAsync(history);
 
                 return oldProduct.ProductId.Value;
             }
