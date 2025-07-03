@@ -64,7 +64,7 @@ namespace ProductsMS.Application.Products.Handlers.Commands
 
                 // Crear la entidad Producto
                 var product = new ProductEntity(
-                    ProductId.Create(request.Product.ProductId),
+                    ProductId.Create(Guid.NewGuid()),
                     ProductName.Create(request.Product.ProductName),
                     ProductImage.FromBase64(request.Product.ProductImage),
                     ProductPrice.Create(request.Product.ProductPrice),
