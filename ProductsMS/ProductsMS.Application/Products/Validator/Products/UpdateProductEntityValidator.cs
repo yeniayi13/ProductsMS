@@ -26,8 +26,11 @@ namespace ProductsMS.Application.Products.Validator.Products
                 .NotNull().WithMessage("Debe especificar la disponibilidad del producto.");
 
             RuleFor(x => x.ProductStock)
-                .NotEmpty().WithMessage("El stock del producto es obligatorio.")
-                .Must(stock => stock >= 0).WithMessage("El stock debe ser mayor a 0.");
+       .GreaterThanOrEqualTo(0).WithMessage("El stock no puede ser negativo.");
+            
+            /*(x => x.ProductStock)
+                .NotEmpty().WithMessage("El stock del producto es obligatorio.");
+                //.Must(stock => stock >= 0).WithMessage("El stock debe ser mayor a 0*/
 
             RuleFor(x => x.CategoryId)
                 .NotNull().WithMessage("Debe especificar una categoría válida.");
