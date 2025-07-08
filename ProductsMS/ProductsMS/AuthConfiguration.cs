@@ -50,6 +50,7 @@ namespace ProductsMS
             // Configurar políticas de autorización basadas en roles de Keycloak
             services.AddAuthorization(o =>
             {
+                // ✅ Política: Administrador
                 o.AddPolicy("AdministradorPolicy", policy =>
                     policy.RequireAuthenticatedUser()
                         .RequireAssertion(context =>
@@ -58,49 +59,12 @@ namespace ProductsMS
                             if (string.IsNullOrEmpty(resourceAccess)) return false;
 
                             var resourceAccessJson = JsonDocument.Parse(resourceAccess);
-                            if (resourceAccessJson.RootElement.TryGetProperty("admin-client", out var webClientAccess))
-                            {
-                                return webClientAccess.GetProperty("roles").EnumerateArray()
+                            return resourceAccessJson.RootElement.TryGetProperty("admin-client", out var clientAccess) &&
+                                clientAccess.GetProperty("roles").EnumerateArray()
                                     .Any(role => role.GetString() == "Administrator");
-                            }
-
-                            return false;
                         }));
 
-                o.AddPolicy("PostorPolicy", policy =>
-                    policy.RequireAuthenticatedUser()
-                        .RequireAssertion(context =>
-                        {
-                            var resourceAccess = context.User.FindFirst("resource_access")?.Value;
-                            if (string.IsNullOrEmpty(resourceAccess)) return false;
-
-                            var resourceAccessJson = JsonDocument.Parse(resourceAccess);
-                            if (resourceAccessJson.RootElement.TryGetProperty("admin-client", out var webClientAccess))
-                            {
-                                return webClientAccess.GetProperty("roles").EnumerateArray()
-                                    .Any(role => role.GetString() == "Bidder");
-                            }
-
-                            return false;
-                        }));
-
-                o.AddPolicy("SubastadorPolicy", policy =>
-                    policy.RequireAuthenticatedUser()
-                        .RequireAssertion(context =>
-                        {
-                            var resourceAccess = context.User.FindFirst("resource_access")?.Value;
-                            if (string.IsNullOrEmpty(resourceAccess)) return false;
-
-                            var resourceAccessJson = JsonDocument.Parse(resourceAccess);
-                            if (resourceAccessJson.RootElement.TryGetProperty("admin-client", out var webClientAccess))
-                            {
-                                return webClientAccess.GetProperty("roles").EnumerateArray()
-                                    .Any(role => role.GetString() == "Auctioneer");
-                            }
-
-                            return false;
-                        }));
-
+                // ✅ Política: Soporte
                 o.AddPolicy("SoportePolicy", policy =>
                     policy.RequireAuthenticatedUser()
                         .RequireAssertion(context =>
@@ -109,15 +73,70 @@ namespace ProductsMS
                             if (string.IsNullOrEmpty(resourceAccess)) return false;
 
                             var resourceAccessJson = JsonDocument.Parse(resourceAccess);
-                            if (resourceAccessJson.RootElement.TryGetProperty("admin-client", out var webClientAccess))
-                            {
-                                return webClientAccess.GetProperty("roles").EnumerateArray()
+                            return resourceAccessJson.RootElement.TryGetProperty("admin-client", out var clientAccess) &&
+                                clientAccess.GetProperty("roles").EnumerateArray()
                                     .Any(role => role.GetString() == "Support");
-                            }
-
-                            return false;
                         }));
 
+                // ✅ Política: Postor
+                o.AddPolicy("PostorPolicy", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(context =>
+                        {
+                            var resourceAccess = context.User.FindFirst("resource_access")?.Value;
+                            if (string.IsNullOrEmpty(resourceAccess)) return false;
+
+                            var resourceAccessJson = JsonDocument.Parse(resourceAccess);
+                            return resourceAccessJson.RootElement.TryGetProperty("admin-client", out var clientAccess) &&
+                                clientAccess.GetProperty("roles").EnumerateArray()
+                                    .Any(role => role.GetString() == "Bidder");
+                        }));
+
+                // ✅ Política: Subastador
+                o.AddPolicy("SubastadorPolicy", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(context =>
+                        {
+                            var resourceAccess = context.User.FindFirst("resource_access")?.Value;
+                            if (string.IsNullOrEmpty(resourceAccess)) return false;
+
+                            var resourceAccessJson = JsonDocument.Parse(resourceAccess);
+                            return resourceAccessJson.RootElement.TryGetProperty("admin-client", out var clientAccess) &&
+                                clientAccess.GetProperty("roles").EnumerateArray()
+                                    .Any(role => role.GetString() == "Auctioneer");
+                        }));
+
+                // ✅ Política combinada: Subastador o Postor
+                o.AddPolicy("SubastadorOPostorPolicy", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(context =>
+                        {
+                            var resourceAccess = context.User.FindFirst("resource_access")?.Value;
+                            if (string.IsNullOrEmpty(resourceAccess)) return false;
+
+                            var resourceAccessJson = JsonDocument.Parse(resourceAccess);
+                            if (!resourceAccessJson.RootElement.TryGetProperty("admin-client", out var clientAccess))
+                                return false;
+
+                            var roles = clientAccess.GetProperty("roles").EnumerateArray().Select(r => r.GetString());
+                            return roles.Contains("Auctioneer") || roles.Contains("Bidder");
+                        }));
+
+                // ✅ Política combinada: Administrador o Soporte
+                o.AddPolicy("AdministradorOSoportePolicy", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(context =>
+                        {
+                            var resourceAccess = context.User.FindFirst("resource_access")?.Value;
+                            if (string.IsNullOrEmpty(resourceAccess)) return false;
+
+                            var resourceAccessJson = JsonDocument.Parse(resourceAccess);
+                            if (!resourceAccessJson.RootElement.TryGetProperty("admin-client", out var clientAccess))
+                                return false;
+
+                            var roles = clientAccess.GetProperty("roles").EnumerateArray().Select(r => r.GetString());
+                            return roles.Contains("Administrator") || roles.Contains("Support");
+                        }));
             });
 
             // Agregar IHttpContextAccessor (necesario para acceder al contexto HTTP)
