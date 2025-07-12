@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Category\Commands\" />
+    <Folder Include="Category\Handlers\Commands\" />
+    <Folder Include="Category\Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProductsMS.Common\ProductsMS.Common.csproj" />
+    <ProjectReference Include="..\ProductsMS.Core\ProductsMS.Core.csproj" />
+    <ProjectReference Include="..\ProductsMS.Infrastructure\ProductsMS.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
